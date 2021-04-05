@@ -9,11 +9,10 @@
 /* Begin PBXBuildFile section */
 		3D943DE78B7F9954E5A6A75B /* Pods_QuizApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E36DECEEC7CDD1A7CD48F7A /* Pods_QuizApp.framework */; };
 		C10AD7452618DEF0002B25FB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10AD7442618DEF0002B25FB /* AppDelegate.swift */; };
-		C10AD7472618DEF0002B25FB /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10AD7462618DEF0002B25FB /* SceneDelegate.swift */; };
-		C10AD7492618DEF0002B25FB /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10AD7482618DEF0002B25FB /* ViewController.swift */; };
-		C10AD74C2618DEF0002B25FB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C10AD74A2618DEF0002B25FB /* Main.storyboard */; };
 		C10AD74E2618DEF1002B25FB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C10AD74D2618DEF1002B25FB /* Assets.xcassets */; };
 		C10AD7512618DEF1002B25FB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C10AD74F2618DEF1002B25FB /* LaunchScreen.storyboard */; };
+		C1E6B01C261B553800362308 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E6B01B261B553800362308 /* LoginViewController.swift */; };
+		C1E6B025261B5C6000362308 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E6B024261B5C6000362308 /* SceneDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,12 +21,11 @@
 		8293BB85484122C27103E5DA /* Pods-QuizApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QuizApp.debug.xcconfig"; path = "Target Support Files/Pods-QuizApp/Pods-QuizApp.debug.xcconfig"; sourceTree = "<group>"; };
 		C10AD7412618DEF0002B25FB /* QuizApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuizApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C10AD7442618DEF0002B25FB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		C10AD7462618DEF0002B25FB /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		C10AD7482618DEF0002B25FB /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		C10AD74B2618DEF0002B25FB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		C10AD74D2618DEF1002B25FB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C10AD7502618DEF1002B25FB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C10AD7522618DEF1002B25FB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C1E6B01B261B553800362308 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		C1E6B024261B5C6000362308 /* SceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,12 +70,11 @@
 			isa = PBXGroup;
 			children = (
 				C10AD7442618DEF0002B25FB /* AppDelegate.swift */,
-				C10AD7462618DEF0002B25FB /* SceneDelegate.swift */,
-				C10AD7482618DEF0002B25FB /* ViewController.swift */,
-				C10AD74A2618DEF0002B25FB /* Main.storyboard */,
+				C1E6B024261B5C6000362308 /* SceneDelegate.swift */,
 				C10AD74D2618DEF1002B25FB /* Assets.xcassets */,
 				C10AD74F2618DEF1002B25FB /* LaunchScreen.storyboard */,
 				C10AD7522618DEF1002B25FB /* Info.plist */,
+				C1E6B01B261B553800362308 /* LoginViewController.swift */,
 			);
 			path = QuizApp;
 			sourceTree = "<group>";
@@ -88,7 +85,6 @@
 				8293BB85484122C27103E5DA /* Pods-QuizApp.debug.xcconfig */,
 				6B40423213579578605F298B /* Pods-QuizApp.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -152,7 +148,6 @@
 			files = (
 				C10AD7512618DEF1002B25FB /* LaunchScreen.storyboard in Resources */,
 				C10AD74E2618DEF1002B25FB /* Assets.xcassets in Resources */,
-				C10AD74C2618DEF0002B25FB /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -188,23 +183,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C10AD7492618DEF0002B25FB /* ViewController.swift in Sources */,
+				C1E6B01C261B553800362308 /* LoginViewController.swift in Sources */,
 				C10AD7452618DEF0002B25FB /* AppDelegate.swift in Sources */,
-				C10AD7472618DEF0002B25FB /* SceneDelegate.swift in Sources */,
+				C1E6B025261B5C6000362308 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		C10AD74A2618DEF0002B25FB /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				C10AD74B2618DEF0002B25FB /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		C10AD74F2618DEF1002B25FB /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
