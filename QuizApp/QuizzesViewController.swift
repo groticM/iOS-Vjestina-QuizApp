@@ -22,8 +22,11 @@ class QuizzesViewController: UIViewController {
     private var imageErrorView: UIImageView!
     private var errorTitle: UILabel!
     private var errorText: UILabel!
+    private var nba:Int!
     
     private let cellIdentifier = "cellId"
+    private let headerIdentifier = "headerId"
+    private let colorBackground = UIColor(red: 0.2471, green: 0.5922, blue: 0.9882, alpha: 1.0)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,7 +38,7 @@ class QuizzesViewController: UIViewController {
     
     private func buildFirstViews() {
         
-        view.backgroundColor = .systemTeal
+        view.backgroundColor = colorBackground
         
         //Title label
         titleLabel = UILabel()
@@ -55,7 +58,7 @@ class QuizzesViewController: UIViewController {
         button.setTitleColor(.systemIndigo, for: .normal)
         button.addTarget(self, action: #selector(getQuizes), for: .touchUpInside)
         
-        //UIView
+        //Error View
         errorView = UIView()
         view.addSubview(errorView)
         
@@ -78,7 +81,6 @@ class QuizzesViewController: UIViewController {
         errorText.text = "Data can't be reached. \n Please try again!"
         errorView.addSubview(errorText)
         
-        
     }
     
     private func addFirstConstraints() {
@@ -87,7 +89,7 @@ class QuizzesViewController: UIViewController {
         titleLabel.autoSetDimension(.width, toSize: 200)
         titleLabel.autoAlignAxis(toSuperviewAxis: .vertical)
         
-        button.autoPinEdge(.top, to: .bottom, of: titleLabel, withOffset: 20)
+        button.autoPinEdge(.top, to: .bottom, of: titleLabel, withOffset: 15)
         button.autoSetDimensions(to: CGSize(width: 200, height: 40))
         button.autoAlignAxis(toSuperviewAxis: .vertical)
         
@@ -117,20 +119,26 @@ class QuizzesViewController: UIViewController {
         let dataService =  DataService()
         quizzes = dataService.fetchQuizes()
         
+        // Filter Quizzes for some words and count
+        let questions = quizzes.flatMap{ $0.questions }
+        let q = questions.filter{ $0.question.contains("NBA") }
+        nba = q.count
+        
         buildSecondView()
         addSecondConstraints()
 
         // TableView
-        tableView = UITableView(frame: CGRect(x: 20, y: 300, width: view.frame.width - 40, height: view.bounds.height))
-        tableView.backgroundColor = .systemTeal
-        tableView.separatorColor = .systemTeal
-        tableView.sectionIndexColor = .white
-        tableView.rowHeight = 200
+        tableView = UITableView(frame: CGRect(x: 20, y: 280, width: view.bounds.width - 40, height: view.bounds.height))
+        tableView.backgroundColor = colorBackground
+        tableView.separatorColor = colorBackground
         view.addSubview(tableView)
         
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentifier)
+        tableView.register(UITableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: headerIdentifier)
+        
         tableView.dataSource = self
         tableView.delegate = self
+        
         
     }
     
@@ -154,9 +162,10 @@ class QuizzesViewController: UIViewController {
         //Fun Fact Label
         infLabel = UILabel()
         view.addSubview(infLabel)
-        infLabel.font = UIFont(name: "HelveticaNeue-Bold", size: 25)
+        infLabel.font = UIFont(name: "HelveticaNeue", size: 20)
         infLabel.textColor = .white
-        infLabel.text = "fkgjnlksd fjgijsdf igjhisrtj ghiojrtioh"
+        infLabel.numberOfLines = 0
+        infLabel.text = "There are \(nba!) questions that contain the word \"NBA\"."
         
     }
     
@@ -166,89 +175,154 @@ class QuizzesViewController: UIViewController {
         funFactLabel.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 20)
         funFactLabel.autoSetDimension(.height, toSize: 40)
         
-        infLabel.autoPinEdge(.top, to: .bottom, of: funFactLabel, withOffset: 10)
+        infLabel.autoPinEdge(.top, to: .bottom, of: funFactLabel)
         infLabel.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 20)
-        infLabel.autoSetDimensions(to: CGSize(width: (view.frame.width - 40), height: 100))
+        infLabel.autoSetDimensions(to: CGSize(width: (view.frame.width - 40), height: 60))
     }
 }
 
 extension QuizzesViewController: UITableViewDataSource {
-    func ​​​numberOfSections​(​in​ tableView: UITableView) -> Int {
+    
+    func ​​​numberOfSections​(​in tableView: UITableView) -> Int {
         return QuizCategory.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return quizzes.count
-    }
-    
-    /*func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 10
-    }
-    
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let headerView = UIView()
+        var count: Int!
         
-        let explanationLabel = UILabel(frame: CGRect(x: -10, y: 10, width: view.frame.size.width - 20, height: 80))
-        explanationLabel.textColor = UIColor.darkGray
-        explanationLabel.numberOfLines = 0
-        explanationLabel.text = "AA"
-        
-        headerView.addSubview(explanationLabel)
-        headerView.backgroundColor = UIColor.clear
-        return headerView
-    }*/
+        switch section {
+        case 0:
+            let science = quizzes.filter{ $0.category == QuizCategory.science }
+            count = science.count
+            return count
+        case 1:
+            let sport = quizzes.filter{ $0.category == QuizCategory.sport }
+            count = sport.count
+            return count
+        default:
+            count = 0
+            return count
+        }
+    }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cellView = UIView()
-        cellView.backgroundColor = .gray
-        cellView.layer.cornerRadius = 20
-        
-        let imageView = UIImageView(image: UIImage(named: "bulb"))
-        imageView.contentMode = .scaleToFill
-        cellView.addSubview(imageView)
-        imageView.autoPinEdge(toSuperviewSafeArea: .top, withInset: 30)
-        imageView.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 20)
-        imageView.autoSetDimensions(to: CGSize(width: 120, height: 120))
-        
-        let title = UILabel()
-        title.text = quizzes[indexPath.row].title
-        title.textColor = .white
-        title.font = UIFont(name: "HelveticaNeue-Bold", size: 25)
-        title.numberOfLines = 0
-        cellView.addSubview(title)
-        title.autoPinEdge(toSuperviewSafeArea: .top, withInset: 30)
-        title.autoPinEdge(.leading, to: .trailing, of: imageView, withOffset: 10)
-        title.autoSetDimension(.width, toSize: 200)
-        
-        let description = UILabel()
-        description.text = quizzes[indexPath.row].description
-        description.textColor = .white
-        description.font = UIFont(name: "HelveticaNeue", size: 20)
-        description.numberOfLines = 0
-        cellView.addSubview(description)
-        description.autoPinEdge(.leading, to: .trailing, of: imageView, withOffset: 10)
-        description.autoPinEdge(.top, to: .bottom, of: title, withOffset: 10)
-        description.autoSetDimension(.width, toSize: 200)
-        
         let cell: UITableViewCell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
-        cell.backgroundColor = .systemTeal
-        cell.addSubview(cellView)
-        cell.backgroundColor = UIColor.systemTeal
-        cell.layer.borderColor = UIColor.systemGray.cgColor
-        cell.layer.borderWidth = 1
+        
+        cell.backgroundColor = UIColor(red: 0.5804, green: 0.7725, blue: 0.9882, alpha: 1.0)
         cell.layer.cornerRadius = 10
         cell.clipsToBounds = true
+        
+        let imageView = UIImageView(image: UIImage(named: "bulb"))
+        cell.addSubview(imageView)
+        imageView.contentMode = .scaleToFill
+        imageView.autoPinEdge(toSuperviewSafeArea: .top, withInset: 30)
+        imageView.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 20)
+        imageView.autoSetDimensions(to: CGSize(width: 130, height: 130))
+        
+        let levelView = makeLevelView(level: quizzes[indexPath.row].level)
+        cell.addSubview(levelView)
+        levelView.autoPinEdge(toSuperviewSafeArea: .top, withInset: 15)
+        levelView.autoPinEdge(.leading, to: .trailing, of: imageView, withOffset: 100)
+        levelView.autoSetDimensions(to: CGSize(width: 75, height: 25))
+        
+        let title = UILabel()
+        title.textColor = .white
+        title.font = UIFont(name: "HelveticaNeue-Bold", size: 18)
+        title.numberOfLines = 0
+        title.text = quizzes[indexPath.row].title
+        cell.addSubview(title)
+        title.autoPinEdge(.top, to: .bottom, of: levelView, withOffset: 10)
+        title.autoPinEdge(.leading, to: .trailing, of: imageView, withOffset: 10)
+        title.autoPinEdge(.trailing, to: .trailing, of: levelView)
+        
+        let description = UILabel()
+        description.textColor = .white
+        description.font = UIFont(name: "HelveticaNeue", size: 18)
+        description.numberOfLines = 0
+        description.text = quizzes[indexPath.row].description
+        cell.addSubview(description)
+        description.autoPinEdge(.leading, to: .trailing, of: imageView, withOffset: 10)
+        description.autoPinEdge(.top, to: .bottom, of: title, withOffset: 10)
+        description.autoPinEdge(.trailing, to: .trailing, of: levelView)
 
+        print("Section: \(indexPath.section) Row: \(indexPath.row).")
+       
         return cell
+    }
+    
+    private func makeLevelView(level: Int) -> UIView{
+        
+        let levelView = UIView()
+        let star = UIImage(systemName: "star")
+        let fillStar = UIImage(systemName: "star.fill")
+        let color = UIColor(red: 1, green: 0.7765, blue: 0.4863, alpha: 1.0)
+        
+        let starView1 = UIImageView(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
+        starView1.tintColor = color
+        let starView2 = UIImageView(frame: CGRect(x: 25, y: 0, width: 25, height: 25))
+        starView2.tintColor = color
+        let starView3 = UIImageView(frame: CGRect(x: 50, y: 0, width: 25, height: 25))
+        starView3.tintColor = color
+
+        switch level {
+        case 1:
+            starView1.image = fillStar
+            starView2.image = star
+            starView3.image = star
+            
+        case 2:
+            starView1.image = fillStar
+            starView2.image = fillStar
+            starView3.image = star
+        case 3:
+            starView1.image = fillStar
+            starView2.image = fillStar
+            starView3.image = fillStar
+        default:
+            print("Bok!")
+        }
+        
+        levelView.addSubview(starView1)
+        levelView.addSubview(starView2)
+        levelView.addSubview(starView3)
+        
+        return levelView
+        
     }
 }
 
 extension QuizzesViewController: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 200.0
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        
+        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.size.width, height: 20))
+        headerView.backgroundColor = colorBackground
+        
+        let sectionTitle = UILabel(frame: CGRect(x: 10, y: 0, width: tableView.bounds.size.width, height: 20))
+        sectionTitle.textColor = .white
+        sectionTitle.font = UIFont(name: "HelveticaNeue-Bold", size: 25)
+        
+        switch section {
+        case 0:
+            sectionTitle.text = QuizCategory.science.rawValue
+        case 1:
+            sectionTitle.text = QuizCategory.sport.rawValue
+        default:
+            sectionTitle.text = ""
+        }
+        
+        headerView.addSubview(sectionTitle)
+
+        return headerView
+    }
 
     func ​tableView​(​_​ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
-        
     }
     
 }

@@ -15,10 +15,15 @@ class LoginViewController: UIViewController {
     private var emailField: UITextField!
     private var passwordField: UITextField!
     private var loginButton: UIButton!
+    private var passwordButton: UIButton!
+    private var iconClick: Bool = true
+    private var emailView: UIView!
+    private var passwordView: UIView!
     
-    private let defaultTextFieldAlpha: CGFloat = 0.3
+    private let defaultTextFieldAlpha: CGFloat = 0.2
     private let defaultButtonAlpha: CGFloat = 0.5
-    
+    private let colorBackground = UIColor(red: 0.2471, green: 0.5922, blue: 0.9882, alpha: 1.0)
+    private let colorTextField = UIColor(red: 0.8118, green: 0.8941, blue: 0.9882, alpha: 1.0)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,7 +36,7 @@ class LoginViewController: UIViewController {
     private func buildViews() {
         let radius: CGFloat = 25
         
-        view.backgroundColor = .systemTeal
+        view.backgroundColor = colorBackground
         
         //Title label
         titleLabel = UILabel()
@@ -42,19 +47,29 @@ class LoginViewController: UIViewController {
         titleLabel.textColor = .white
         
         //E-mail field
+        emailView = UIView()
         emailField = UITextField()
-        view.addSubview(emailField)
-        designTextField(target: emailField, text: "E-mail", radius: radius)
+        view.addSubview(emailView)
+        designTextField(viewField: emailView, textField: emailField, text: "E-mail", radius: radius)
         emailField.addTarget(self, action: #selector(updateEmail), for: .editingDidBegin)
         emailField.addTarget(self, action: #selector(doneEmail), for: .editingDidEnd)
+        emailField.bounds.inset(by: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15))
         
         //Password field
+        passwordView = UIView()
         passwordField = UITextField()
-        view.addSubview(passwordField)
+        view.addSubview(passwordView)
         passwordField.isSecureTextEntry.toggle()
-        designTextField(target: passwordField, text: "Password", radius: radius)
+        designTextField(viewField: passwordView, textField: passwordField, text: "Password", radius: radius)
         passwordField.addTarget(self, action: #selector(updatePassword), for: .editingDidBegin)
         passwordField.addTarget(self, action: #selector(donePassword), for: .editingDidEnd)
+        
+        passwordButton = UIButton();
+        passwordButton.setBackgroundImage(UIImage(systemName: "eye"), for: .normal)
+        passwordButton.tintColor = .black
+        passwordButton.addTarget(self, action: #selector(seePassword), for: .touchUpInside)
+        passwordField.rightViewMode = .always
+        passwordField.rightView = passwordButton
 
         //Login button
         loginButton = UIButton()
@@ -64,7 +79,7 @@ class LoginViewController: UIViewController {
         loginButton.layer.cornerRadius = radius
         loginButton.backgroundColor = .white
         loginButton.alpha = defaultButtonAlpha
-        loginButton.addTarget(self, action: #selector(customAction), for: .touchUpInside)
+        loginButton.addTarget(self, action: #selector(login), for: .touchUpInside)
         
     }
     
@@ -77,66 +92,81 @@ class LoginViewController: UIViewController {
             titleLabel.widthAnchor.constraint(equalToConstant: 220)
         ])
         
+        emailView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            emailView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emailView.topAnchor.constraint(equalTo: view.topAnchor, constant: 300),
+            emailView.heightAnchor.constraint(equalToConstant: 50),
+            emailView.widthAnchor.constraint(equalToConstant: 325)
+        ])
+        
         emailField.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            emailField.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            emailField.topAnchor.constraint(equalTo: view.topAnchor, constant: 300),
+            emailField.centerXAnchor.constraint(equalTo: emailView.centerXAnchor),
+            emailField.topAnchor.constraint(equalTo: emailView.topAnchor),
             emailField.heightAnchor.constraint(equalToConstant: 50),
-            emailField.widthAnchor.constraint(equalToConstant: 325)
+            emailField.widthAnchor.constraint(equalToConstant: 300)
+        ])
+        
+        passwordView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            passwordView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            passwordView.topAnchor.constraint(equalTo: emailView.bottomAnchor, constant: 10),
+            passwordView.heightAnchor.constraint(equalToConstant: 50),
+            passwordView.widthAnchor.constraint(equalTo: emailView.widthAnchor)
         ])
         
         passwordField.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            passwordField.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            passwordField.topAnchor.constraint(equalTo: emailField.bottomAnchor, constant: 10),
+            passwordField.centerXAnchor.constraint(equalTo: passwordView.centerXAnchor),
+            passwordField.topAnchor.constraint(equalTo: passwordView.topAnchor),
             passwordField.heightAnchor.constraint(equalToConstant: 50),
-            passwordField.widthAnchor.constraint(equalTo: emailField.widthAnchor)
+            passwordField.widthAnchor.constraint(equalToConstant: 300)
         ])
         
         loginButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             loginButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            loginButton.topAnchor.constraint(equalTo: passwordField.bottomAnchor, constant: 10),
+            loginButton.topAnchor.constraint(equalTo: passwordView.bottomAnchor, constant: 10),
             loginButton.heightAnchor.constraint(equalToConstant: 50),
-            loginButton.widthAnchor.constraint(equalTo: emailField.widthAnchor)
+            loginButton.widthAnchor.constraint(equalTo: emailView.widthAnchor)
         ])
     }
     
-    private func designTextField(target: UITextField, text: String, radius: CGFloat){
+    private func designTextField(viewField: UIView,textField: UITextField, text: String, radius: CGFloat){
         
-        target.layer.cornerRadius = radius
-        target.clipsToBounds = true
-        target.placeholder = text
-        target.textColor = .black
-        target.font = UIFont(name: "HelveticaNeue-Bold", size: 20)
-        target.backgroundColor = .systemGray3
-        target.alpha = defaultTextFieldAlpha
-        target.autocapitalizationType = .none
+        viewField.layer.cornerRadius = radius
+        viewField.clipsToBounds = true
+        viewField.backgroundColor = colorTextField
+        viewField.alpha = defaultTextFieldAlpha
+        
+        textField.placeholder = text
+        textField.tintColor = .black
+        textField.font = UIFont(name: "HelveticaNeue-Bold", size: 20)
+        textField.backgroundColor = colorTextField
+        textField.autocapitalizationType = .none
+        
+        viewField.addSubview(textField)
         
     }
     
     @objc
     private func updateEmail() {
-        emailField.layer.masksToBounds = true
-        emailField.layer.borderWidth = 2
-        emailField.layer.borderColor = UIColor.white.cgColor
+        emailView.layer.masksToBounds = true
+        emailView.layer.borderWidth = 2
+        emailView.layer.borderColor = UIColor.black.cgColor
     }
     
     @objc
     private func doneEmail() {
-        emailField.layer.borderWidth = 0
+        emailView.layer.borderWidth = 0
     }
     
     @objc
     private func updatePassword() {
-        passwordField.layer.masksToBounds = true
-        passwordField.layer.borderWidth = 2
-        passwordField.layer.borderColor = UIColor.white.cgColor
-    }
-    
-    @objc
-    private func donePassword() {
-        passwordField.layer.borderWidth = 0
+        passwordView.layer.masksToBounds = true
+        passwordView.layer.borderWidth = 2
+        passwordView.layer.borderColor = UIColor.black.cgColor
         
         let password = passwordField.text
         if password != "" {
@@ -148,7 +178,27 @@ class LoginViewController: UIViewController {
     }
     
     @objc
-    private func customAction(){
+    private func donePassword() {
+        passwordView.layer.borderWidth = 0
+        
+    }
+    
+    @objc
+    private func seePassword() {
+        if(iconClick == true) {
+            passwordButton.setBackgroundImage(UIImage(systemName: "eye.slash"), for: .normal)
+            passwordField.isSecureTextEntry = false
+        } else {
+            passwordButton.setBackgroundImage(UIImage(systemName: "eye"), for: .normal)
+            passwordField.isSecureTextEntry  = true
+        }
+
+        iconClick = !iconClick
+        
+    }
+    
+    @objc
+    private func login(){
         
         UIView.animate(withDuration: 0.2,
                        animations: {self.loginButton.backgroundColor = .darkGray},
@@ -170,5 +220,7 @@ class LoginViewController: UIViewController {
         }        
         
     }
-    
 }
+
+
+
