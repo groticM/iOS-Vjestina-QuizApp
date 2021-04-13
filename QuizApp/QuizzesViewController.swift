@@ -96,17 +96,18 @@ class QuizzesViewController: UIViewController {
         errorView.autoPinEdge(.bottom, to: .bottom, of: view, withOffset: 30)
         errorView.autoPinEdge(toSuperviewSafeArea: .leading)
         errorView.autoAlignAxis(toSuperviewAxis: .vertical)
+    
+        errorText.autoCenterInSuperview()
+        errorText.autoPinEdge(.top, to: .bottom, of: errorTitle, withOffset: 10)
+        errorText.autoAlignAxis(toSuperviewAxis: .vertical)
         
-        errorTitle.autoCenterInSuperview()
+        errorTitle.autoPinEdge(.bottom, to: .top, of: errorText, withOffset: -10)
         errorTitle.autoSetDimension(.width, toSize: 200)
         errorTitle.autoAlignAxis(toSuperviewAxis: .vertical)
         
         imageErrorView.autoPinEdge(.bottom, to: .top, of: errorTitle, withOffset: -10)
         imageErrorView.autoSetDimensions(to: CGSize(width: 80, height: 80))
         imageErrorView.autoAlignAxis(toSuperviewAxis: .vertical)
-        
-        errorText.autoPinEdge(.top, to: .bottom, of: errorTitle, withOffset: 10)
-        errorText.autoAlignAxis(toSuperviewAxis: .vertical)
 
     }
     
