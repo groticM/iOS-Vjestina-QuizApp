@@ -20,7 +20,7 @@ class LoginViewController: UIViewController {
     private var emailView: UIView!
     private var passwordView: UIView!
     
-    private let defaultTextFieldAlpha: CGFloat = 0.2
+    private let defaultTextFieldAlpha: CGFloat = 0.3
     private let defaultButtonAlpha: CGFloat = 0.5
     private let colorBackground = UIColor(red: 0.2471, green: 0.5922, blue: 0.9882, alpha: 1.0)
     private let colorTextField = UIColor(red: 0.8118, green: 0.8941, blue: 0.9882, alpha: 1.0)
@@ -167,6 +167,11 @@ class LoginViewController: UIViewController {
         passwordView.layer.masksToBounds = true
         passwordView.layer.borderWidth = 2
         passwordView.layer.borderColor = UIColor.black.cgColor
+    }
+    
+    @objc
+    private func donePassword() {
+        passwordView.layer.borderWidth = 0
         
         let password = passwordField.text
         if password != "" {
@@ -174,13 +179,6 @@ class LoginViewController: UIViewController {
         } else {
             loginButton.alpha = defaultButtonAlpha
         }
-        
-    }
-    
-    @objc
-    private func donePassword() {
-        passwordView.layer.borderWidth = 0
-        
     }
     
     @objc
