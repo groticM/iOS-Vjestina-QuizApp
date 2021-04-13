@@ -192,7 +192,7 @@ class QuizzesViewController: UIViewController {
 
 extension QuizzesViewController: UITableViewDataSource {
     
-    func ​​​numberOfSections​(​in tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return QuizCategory.count
     }
 
@@ -317,11 +317,11 @@ extension QuizzesViewController: UITableViewDataSource {
 extension QuizzesViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 200.0
+        return 180.0
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 30.0
+        return 40.0
     }
         
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -329,7 +329,7 @@ extension QuizzesViewController: UITableViewDelegate {
         let headerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.size.width, height: 20))
         headerView.backgroundColor = colorBackground
         
-        let sectionTitle = UILabel(frame: CGRect(x: 10, y: 0, width: tableView.bounds.size.width, height: 20))
+        let sectionTitle = UILabel(frame: CGRect(x: 10, y: 10, width: tableView.bounds.size.width, height: 20))
         sectionTitle.textColor = .white
         sectionTitle.font = UIFont(name: "HelveticaNeue-Bold", size: 25)
         
