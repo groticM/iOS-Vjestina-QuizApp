@@ -215,10 +215,6 @@ class LoginViewController: UIViewController {
                 print("Password: ", password!)
             case LoginStatus.error(_, _):
                 print(loginStatus)
-        }        
-        
+        }
     }
 }
-
-
-
