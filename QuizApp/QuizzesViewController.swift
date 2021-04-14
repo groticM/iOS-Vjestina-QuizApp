@@ -228,9 +228,6 @@ extension QuizzesViewController: UITableViewDataSource {
         let imageView = UIImageView(image: UIImage(named: "bulb"))
         cell.addSubview(imageView)
         imageView.contentMode = .scaleToFill
-        imageView.autoPinEdge(toSuperviewSafeArea: .top, withInset: 30)
-        imageView.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 20)
-        imageView.autoSetDimensions(to: CGSize(width: 130, height: 130))
         
         // Title of the quiz
         let title = UILabel()
@@ -246,6 +243,7 @@ extension QuizzesViewController: UITableViewDataSource {
         description.numberOfLines = 0
         cell.addSubview(description)
         
+        // Level
         let levelView: UIView!
         
         if indexPath.section == 0 {
@@ -257,22 +255,23 @@ extension QuizzesViewController: UITableViewDataSource {
             title.text = sportQuizzes[indexPath.row].title
             description.text = sportQuizzes[indexPath.row].description
         }
-        
-        // Level
         cell.addSubview(levelView)
+                
+        imageView.autoPinEdge(toSuperviewSafeArea: .top, withInset: 30)
+        imageView.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 20)
+        imageView.autoSetDimensions(to: CGSize(width: 120, height: 120))
+        
         levelView.autoPinEdge(toSuperviewSafeArea: .top, withInset: 15)
-        levelView.autoPinEdge(.leading, to: .trailing, of: imageView, withOffset: 100)
+        levelView.autoPinEdge(.leading, to: .trailing, of: imageView, withOffset: 125)
         levelView.autoSetDimensions(to: CGSize(width: 75, height: 25))
         
         title.autoPinEdge(.top, to: .bottom, of: levelView, withOffset: 10)
         title.autoPinEdge(.leading, to: .trailing, of: imageView, withOffset: 10)
-        title.autoPinEdge(.trailing, to: .trailing, of: levelView)
+        title.autoSetDimensions(to: CGSize(width: 200, height: 45))
         
         description.autoPinEdge(.leading, to: .trailing, of: imageView, withOffset: 10)
-        description.autoPinEdge(.top, to: .bottom, of: title, withOffset: 10)
-        description.autoPinEdge(.trailing, to: .trailing, of: levelView)
-        
-        print("Section: \(indexPath.section) Row: \(indexPath.row).")
+        description.autoPinEdge(.top, to: .bottom, of: title)
+        description.autoSetDimensions(to: CGSize(width: 200, height: 75))
     
         return cell
     }

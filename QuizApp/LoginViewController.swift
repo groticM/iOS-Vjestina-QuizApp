@@ -19,6 +19,7 @@ class LoginViewController: UIViewController {
     private var iconClick: Bool = true
     private var emailView: UIView!
     private var passwordView: UIView!
+    private var hiddenErrorLabel: UILabel!
     
     private let defaultTextFieldAlpha: CGFloat = 0.3
     private let defaultButtonAlpha: CGFloat = 0.5
@@ -62,7 +63,8 @@ class LoginViewController: UIViewController {
         passwordField.isSecureTextEntry.toggle()
         designTextField(viewField: passwordView, textField: passwordField, text: "Password", radius: radius)
         passwordField.addTarget(self, action: #selector(updatePassword), for: .editingDidBegin)
-        passwordField.addTarget(self, action: #selector(donePassword), for: .editingChanged)
+        passwordField.addTarget(self, action: #selector(startPassword), for: .editingChanged)
+        passwordField.addTarget(self, action: #selector(donePassword), for: .editingDidEnd)
         
         passwordButton = UIButton();
         passwordButton.setBackgroundImage(UIImage(systemName: "eye"), for: .normal)
@@ -74,12 +76,24 @@ class LoginViewController: UIViewController {
         //Login button
         loginButton = UIButton()
         view.addSubview(loginButton)
+        loginButton.isEnabled = false
         loginButton.setTitle("Login", for: .normal)
         loginButton.setTitleColor(.black, for: .normal)
         loginButton.layer.cornerRadius = radius
         loginButton.backgroundColor = .white
         loginButton.alpha = defaultButtonAlpha
         loginButton.addTarget(self, action: #selector(login), for: .touchUpInside)
+        
+        // Error label
+        hiddenErrorLabel = UILabel()
+        view.addSubview(hiddenErrorLabel)
+        hiddenErrorLabel.isHidden = true
+        hiddenErrorLabel.backgroundColor = colorBackground
+        hiddenErrorLabel.layer.cornerRadius = radius
+        hiddenErrorLabel.clipsToBounds = true
+        hiddenErrorLabel.textAlignment = .center
+        hiddenErrorLabel.font = UIFont(name: "HelveticaNeue-Bold", size: 14)
+        
         
     }
     
@@ -131,6 +145,14 @@ class LoginViewController: UIViewController {
             loginButton.heightAnchor.constraint(equalToConstant: 50),
             loginButton.widthAnchor.constraint(equalTo: emailView.widthAnchor)
         ])
+        
+        hiddenErrorLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            hiddenErrorLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            hiddenErrorLabel.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 10),
+            hiddenErrorLabel.heightAnchor.constraint(equalToConstant: 30),
+            hiddenErrorLabel.widthAnchor.constraint(equalToConstant: 200)
+        ])
     }
     
     private func designTextField(viewField: UIView,textField: UITextField, text: String, radius: CGFloat){
@@ -152,6 +174,7 @@ class LoginViewController: UIViewController {
     
     @objc
     private func updateEmail() {
+        hiddenErrorLabel.isHidden = true
         emailView.layer.masksToBounds = true
         emailView.layer.borderWidth = 2
         emailView.layer.borderColor = UIColor.black.cgColor
@@ -164,21 +187,28 @@ class LoginViewController: UIViewController {
     
     @objc
     private func updatePassword() {
+        hiddenErrorLabel.isHidden = true
         passwordView.layer.masksToBounds = true
         passwordView.layer.borderWidth = 2
         passwordView.layer.borderColor = UIColor.black.cgColor
     }
     
     @objc
-    private func donePassword() {
-        passwordView.layer.borderWidth = 0
+    private func startPassword() {
+        hiddenErrorLabel.isHidden = true
         
         let password = passwordField.text
         if password != "" {
+            loginButton.isEnabled = true
             loginButton.alpha = 1
         } else {
             loginButton.alpha = defaultButtonAlpha
         }
+    }
+    
+    @objc
+    private func donePassword() {
+        passwordView.layer.borderWidth = 0
     }
     
     @objc
@@ -213,8 +243,10 @@ class LoginViewController: UIViewController {
             case LoginStatus.success:
                 print("E-mail: ", email!)
                 print("Password: ", password!)
-            case LoginStatus.error(_, _):
-                print(loginStatus)
+            case LoginStatus.error(let code, let text):
+                print("Error: \(text) (\(code))")
+                hiddenErrorLabel.isHidden = false
+                hiddenErrorLabel.text = "Error: \(text) (\(code))"
         }
     }
 }
