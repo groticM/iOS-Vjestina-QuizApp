@@ -186,7 +186,7 @@ class QuizzesViewController: UIViewController {
         tableView.autoPinEdge(.top, to: .bottom, of: infLabel, withOffset: 20)
         tableView.autoPinEdge(.bottom, to: .bottom, of: view, withOffset: 30)
         tableView.autoAlignAxis(toSuperviewAxis: .vertical)
-        tableView.autoSetDimension(.width, toSize: 350)
+        tableView.autoSetDimension(.width, toSize: 370)
     }
 }
 
@@ -215,8 +215,10 @@ extension QuizzesViewController: UITableViewDataSource {
         
         let cell: UITableViewCell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
         cell.backgroundColor = UIColor(red: 0.5804, green: 0.7725, blue: 0.9882, alpha: 1.0)
-        cell.layer.cornerRadius = 10
+        cell.layer.cornerRadius = 20
         cell.clipsToBounds = true
+        cell.layer.borderWidth = 5
+        cell.layer.borderColor = colorBackground.cgColor
         
         let selectedView = UIView()
         selectedView.backgroundColor = .systemTeal

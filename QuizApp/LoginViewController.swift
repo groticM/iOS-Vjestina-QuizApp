@@ -62,7 +62,7 @@ class LoginViewController: UIViewController {
         passwordField.isSecureTextEntry.toggle()
         designTextField(viewField: passwordView, textField: passwordField, text: "Password", radius: radius)
         passwordField.addTarget(self, action: #selector(updatePassword), for: .editingDidBegin)
-        passwordField.addTarget(self, action: #selector(donePassword), for: .editingDidEnd)
+        passwordField.addTarget(self, action: #selector(donePassword), for: .editingChanged)
         
         passwordButton = UIButton();
         passwordButton.setBackgroundImage(UIImage(systemName: "eye"), for: .normal)
