@@ -4,7 +4,7 @@
 //
 //  Created by Marta Grotic on 06.04.2021..
 //
-import Foundation
+
 import UIKit
 import PureLayout
 
@@ -14,80 +14,131 @@ class QuizzesViewController: UIViewController {
     private var button: UIButton!
     private var funFactLabel: UILabel!
     private var infLabel: UILabel!
-    private var quizzes: [Quiz]!
     private var tableView: UITableView!
     private var errorView: UIView!
     private var imageErrorView: UIImageView!
     private var errorTitle: UILabel!
     private var errorText: UILabel!
-    private var nba:Int!
-    private var sportQuizzes: [Quiz]!
-    private var scienceQuizzes: [Quiz]!
+    private var scrollView: UIScrollView!
+    private var funFactView: UIView!
+    private var imageBulbView: UIImageView!
     
+    private var quizzes: [Quiz]!
+    private var nba: Int?
+    private var categoryNum: Int?
+    
+    private let dataService =  DataService()
     private let cellIdentifier = "cellId"
     private let headerIdentifier = "headerId"
-    private let colorBackground = UIColor(red: 0.2471, green: 0.5922, blue: 0.9882, alpha: 1.0)
-    private let cellBackground = UIColor(red: 0.2471, green: 0.5922, blue: 0.9882, alpha: 0.2)
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        buildFirstViews()
-        addFirstConstraints()
+        buildViews()
+        addConstraints()
         
     }
     
-    private func buildFirstViews() {
-        view.backgroundColor = colorBackground
+    private func buildViews() {
+        view.backgroundColor = Color().colorBackground
         
-        //Title label
+        // ScrollView
+        scrollView = UIScrollView()
+        view.addSubview(scrollView)
+        
+        // Title label
         titleLabel = UILabel()
-        view.addSubview(titleLabel)
+        scrollView.addSubview(titleLabel)
+        titleLabel.isHidden = false
         titleLabel.text = "PopQuiz"
         titleLabel.font = UIFont(name: "HelveticaNeue-Bold", size: 25)
         titleLabel.textColor = .white
         titleLabel.textAlignment = .center
         
-        //Get Quizes button
+        // Get Quizes Button
         button = UIButton()
-        view.addSubview(button)
+        scrollView.addSubview(button)
+        button.isHidden = false
         button.backgroundColor = .white
         button.alpha = 0.5
         button.layer.cornerRadius = 20
         button.setTitle("Get Quiz", for: .normal)
-        button.setTitleColor(.systemIndigo, for: .normal)
+        button.setTitleColor(Color().buttonTextColor, for: .normal)
+        button.titleLabel?.font = UIFont(name: "HelveticaNeue-bold", size: 20)
         button.addTarget(self, action: #selector(getQuizes), for: .touchUpInside)
         
-        //Error View
+        // Error View
         errorView = UIView()
-        view.addSubview(errorView)
-        
+        scrollView.addSubview(errorView)
+        errorView.isHidden = false
+
         imageErrorView = UIImageView(image: UIImage(systemName: "xmark.circle"))
-        imageErrorView.contentMode = .scaleToFill
         errorView.addSubview(imageErrorView)
-        
+        imageErrorView.contentMode = .scaleToFill
+
         errorTitle = UILabel()
+        errorView.addSubview(errorTitle)
         errorTitle.text = "Error"
         errorTitle.textColor = .white
         errorTitle.textAlignment = .center
         errorTitle.font = UIFont(name: "HelveticaNeue-Bold", size: 35)
-        errorView.addSubview(errorTitle)
-        
+
         errorText = UILabel()
+        errorView.addSubview(errorText)
         errorText.numberOfLines = 0
         errorText.textAlignment = .center
         errorText.textColor = .white
         errorText.font = UIFont(name: "HelveticaNeue-Bold", size: 20)
         errorText.text = "Data can't be reached. \n Please try again!"
-        errorView.addSubview(errorText)
+
+        // Fun Fact Title and Bulb Image
+        funFactView = UIView()
+        scrollView.addSubview(funFactView)
+        funFactView.isHidden = true
+        
+        imageBulbView = UIImageView(image: UIImage(named:"bulb"))
+        funFactView.addSubview(imageBulbView)
+        
+        funFactLabel = UILabel()
+        funFactView.addSubview(funFactLabel)
+        funFactLabel.text = " Fun Fact"
+        funFactLabel.textColor = .white
+        funFactLabel.font = UIFont(name: "HelveticaNeue-Bold", size: 25)
+        
+        // Fun Fact Label
+        infLabel = UILabel()
+        infLabel.isHidden = true
+        infLabel.font = UIFont(name: "HelveticaNeue", size: 20)
+        infLabel.textColor = .white
+        infLabel.numberOfLines = 0
+        scrollView.addSubview(infLabel)
+        
+        // TableView
+        tableView = UITableView()
+        tableView.isHidden = true
+        tableView.backgroundColor = Color().colorBackground
+        tableView.separatorColor = Color().colorBackground
+        scrollView.addSubview(tableView)
+        
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentifier)
+        tableView.register(UITableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: headerIdentifier)
+        
+        tableView.dataSource = self
+        tableView.delegate = self
+        
     }
     
-    private func addFirstConstraints() {
+    private func addConstraints() {
+        scrollView.autoPinEdge(.top, to: .top, of: view, withOffset: 5)
+        scrollView.autoPinEdge(.bottom, to: .bottom, of: view, withOffset: 5)
+        scrollView.autoPinEdge(.leading, to: .leading, of: view, withOffset: 5)
+        scrollView.autoPinEdge(.trailing, to: .trailing, of: view, withOffset: 5)
         
         titleLabel.autoPinEdge(toSuperviewSafeArea: .top, withInset: 10)
-        titleLabel.autoSetDimension(.width, toSize: 200)
         titleLabel.autoAlignAxis(toSuperviewAxis: .vertical)
-        
+        titleLabel.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 10)
+        titleLabel.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 10)
+
         button.autoPinEdge(.top, to: .bottom, of: titleLabel, withOffset: 15)
         button.autoSetDimensions(to: CGSize(width: 200, height: 40))
         button.autoAlignAxis(toSuperviewAxis: .vertical)
@@ -108,92 +159,72 @@ class QuizzesViewController: UIViewController {
         imageErrorView.autoPinEdge(.bottom, to: .top, of: errorTitle, withOffset: -10)
         imageErrorView.autoSetDimensions(to: CGSize(width: 80, height: 80))
         imageErrorView.autoAlignAxis(toSuperviewAxis: .vertical)
-
-    }
-    
-    @objc
-    private func getQuizes(){
         
-        errorView.isHidden = true
+        funFactView.autoPinEdge(.top, to: .bottom, of: button, withOffset: 10)
+        funFactView.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 20)
+        funFactView.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 20)
+        funFactView.autoSetDimension(.height, toSize: 40)
         
-        let dataService =  DataService()
-        quizzes = dataService.fetchQuizes()
+        imageBulbView.autoPinEdge(.top, to: .top, of: funFactView)
+        imageBulbView.autoPinEdge(.leading, to: .leading, of: funFactView)
+        imageBulbView.autoPinEdge(.bottom, to: .bottom, of: funFactView)
+        imageBulbView.autoSetDimension(.width, toSize: 40)
         
-        // Filter Quizzes for some words and count
-        let questions = quizzes.flatMap{ $0.questions }
-        let q = questions.filter{ $0.question.contains("NBA") }
-        nba = q.count
+        funFactLabel.autoPinEdge(.top, to: .top, of: funFactView)
+        funFactLabel.autoPinEdge(.leading, to: .trailing, of: imageBulbView)
+        funFactLabel.autoPinEdge(.bottom, to: .bottom, of: funFactView)
+        funFactLabel.autoPinEdge(.trailing, to: .trailing, of: funFactView, withOffset: -20)
         
-        //Sections
-        sportQuizzes = quizzes.filter{ $0.category == QuizCategory.sport }
-        scienceQuizzes = quizzes.filter{ $0.category == QuizCategory.science }
-        
-        buildSecondView()
-        addSecondConstraints()
-        
-    }
-    
-    private func buildSecondView(){
-        
-        //Fun Fact Title and bulb image
-        funFactLabel = UILabel()
-        view.addSubview(funFactLabel)
-        let attachment = NSTextAttachment()
-        attachment.image = UIImage(named:"bulb")
-        attachment.bounds = CGRect(x: 0, y: 0, width: 30, height: 30)
-        let attachmentStr = NSAttributedString(attachment: attachment)
-        let mutableAttributedString = NSMutableAttributedString()
-        mutableAttributedString.append(attachmentStr)
-        let textString = NSAttributedString(string: " Fun Fact",
-                                            attributes: [.font: UIFont(name: "HelveticaNeue-Bold", size: 30)!,
-                                                         .foregroundColor: UIColor.white])
-        mutableAttributedString.append(textString)
-        funFactLabel.attributedText = mutableAttributedString
-        
-        // Fun Fact Label
-        infLabel = UILabel()
-        view.addSubview(infLabel)
-        infLabel.font = UIFont(name: "HelveticaNeue", size: 20)
-        infLabel.textColor = .white
-        infLabel.numberOfLines = 0
-        infLabel.text = "There are \(nba!) questions that contain the word \"NBA\"."
-        
-        // TableView
-        //tableView = UITableView(frame: CGRect(x: 20, y: 275, width: view.bounds.width - 40, height: view.bounds.height))
-        tableView = UITableView()
-        tableView.backgroundColor = colorBackground
-        tableView.separatorColor = colorBackground
-        view.addSubview(tableView)
-        
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentifier)
-        tableView.register(UITableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: headerIdentifier)
-        
-        tableView.dataSource = self
-        tableView.delegate = self
-        
-    }
-    
-    private func addSecondConstraints(){
-        
-        funFactLabel.autoPinEdge(.top, to: .bottom, of: button, withOffset: 10)
-        funFactLabel.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 20)
-        funFactLabel.autoSetDimension(.height, toSize: 40)
-        
-        infLabel.autoPinEdge(.top, to: .bottom, of: funFactLabel)
+        infLabel.autoPinEdge(.top, to: .bottom, of: funFactLabel, withOffset: 5)
         infLabel.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 20)
-        infLabel.autoSetDimensions(to: CGSize(width: 350, height: 60))
+        infLabel.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 20)
+        infLabel.autoSetDimension(.height, toSize: 60)
         
         tableView.autoPinEdge(.top, to: .bottom, of: infLabel, withOffset: 20)
         tableView.autoPinEdge(.bottom, to: .bottom, of: view, withOffset: 30)
         tableView.autoAlignAxis(toSuperviewAxis: .vertical)
         tableView.autoSetDimension(.width, toSize: 370)
+
+    }
+    
+    @objc
+    private func getQuizes(){
+        quizzes = dataService.fetchQuizes()
+        
+        if quizzes != nil {
+            errorView.isHidden = true
+            funFactView.isHidden = false
+            infLabel.isHidden = false
+            tableView.isHidden = false
+            tableView.isHidden = false
+            
+            // Filter Quizzes for some words and count
+            let questions = quizzes.flatMap{ $0.questions }
+            let q = questions.filter{ $0.question.contains("NBA") }
+            nba = q.count
+            
+            if nba != nil {
+                infLabel.text = "There are \(nba!) questions that contain the word \"NBA\"."
+            }
+            
+            // Sections
+            let category = quizzes.compactMap{ $0.category }
+            categoryNum = Set(category).count
+            tableView.reloadData()
+            
+        }
     }
 }
 
 extension QuizzesViewController: UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return QuizCategory.count
+        if categoryNum != nil {
+            return categoryNum!
+        } else {
+            return 0
+        }
+        
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -201,9 +232,9 @@ extension QuizzesViewController: UITableViewDataSource {
         
         switch section {
         case 0:
-            count = scienceQuizzes.count
+            count = 1
         case 1:
-            count = sportQuizzes.count
+            count = 2
         default:
             count = 0
         }
@@ -213,12 +244,15 @@ extension QuizzesViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
+        let sport = quizzes.filter{ $0.category == QuizCategory.sport }
+        let science = quizzes.filter{ $0.category == QuizCategory.science }
+        
         let cell: UITableViewCell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
         cell.backgroundColor = UIColor(red: 0.5804, green: 0.7725, blue: 0.9882, alpha: 1.0)
         cell.layer.cornerRadius = 20
         cell.clipsToBounds = true
         cell.layer.borderWidth = 5
-        cell.layer.borderColor = colorBackground.cgColor
+        cell.layer.borderColor = Color().colorBackground.cgColor
         
         let selectedView = UIView()
         selectedView.backgroundColor = .systemTeal
@@ -244,16 +278,16 @@ extension QuizzesViewController: UITableViewDataSource {
         cell.addSubview(description)
         
         // Level
-        let levelView: UIView!
+        var levelView = UIView()
         
         if indexPath.section == 0 {
-            levelView = makeLevelView(level: scienceQuizzes[indexPath.row].level)
-            title.text = scienceQuizzes[indexPath.row].title
-            description.text = scienceQuizzes[indexPath.row].description
+            levelView = makeLevelView(level: science[indexPath.row].level)
+            title.text = science[indexPath.row].title
+            description.text = science[indexPath.row].description
         } else {
-            levelView = makeLevelView(level: sportQuizzes[indexPath.row].level)
-            title.text = sportQuizzes[indexPath.row].title
-            description.text = sportQuizzes[indexPath.row].description
+            levelView = makeLevelView(level: sport[indexPath.row].level)
+            title.text = sport[indexPath.row].title
+            description.text = sport[indexPath.row].description
         }
         cell.addSubview(levelView)
                 
@@ -276,7 +310,7 @@ extension QuizzesViewController: UITableViewDataSource {
         return cell
     }
     
-    private func makeLevelView(level: Int) -> UIView{
+    private func makeLevelView(level: Int) -> UIView {
         
         let levelView = UIView()
         let star = UIImage(systemName: "star")
@@ -312,6 +346,7 @@ extension QuizzesViewController: UITableViewDataSource {
         levelView.addSubview(starView3)
         
         return levelView
+        
     }
 }
 
@@ -319,16 +354,18 @@ extension QuizzesViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 180.0
+        
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 40.0
+        
     }
         
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
         let headerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.size.width, height: 20))
-        headerView.backgroundColor = colorBackground
+        headerView.backgroundColor = Color().colorBackground
         
         let sectionTitle = UILabel(frame: CGRect(x: 10, y: 10, width: tableView.bounds.size.width, height: 20))
         sectionTitle.textColor = .white
@@ -346,6 +383,7 @@ extension QuizzesViewController: UITableViewDelegate {
         headerView.addSubview(sectionTitle)
 
         return headerView
+        
     }
 
     func ​tableView​(​_​ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
