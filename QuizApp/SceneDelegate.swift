@@ -17,11 +17,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = scene as? UIWindowScene else { return }
         
         window = UIWindow(windowScene: windowScene)
-        //let loginViewController = LoginViewController()
-        //let navigationController = UINavigationController(rootViewController: loginViewController)
+        let loginViewController = LoginViewController()
+        let navigationController = UINavigationController(rootViewController: loginViewController)
         let viewController = QuizzesViewController()
-        //let viewController = SettingsViewController()
-        //let viewController = QuizResultViewController()
+        //let viewController = QuizViewController()
         window?.rootViewController = viewController
         window?.makeKeyAndVisible()
     }

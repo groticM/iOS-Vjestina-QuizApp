@@ -8,7 +8,6 @@
 import Foundation
 import UIKit
 
-
 class LoginViewController: UIViewController {
     
     private var titleLabel: UILabel!
@@ -42,13 +41,13 @@ class LoginViewController: UIViewController {
     private func buildViews() {
         view.backgroundColor = Color().colorBackground
         
-        //ScrollView
+        // ScrollView
         scrollView = UIScrollView()
         view.addSubview(scrollView)
         scrollView.alwaysBounceVertical = true
         scrollView.automaticallyAdjustsScrollIndicatorInsets = true
 
-        //Title label
+        // Title label
         titleLabel = UILabel()
         scrollView.addSubview(titleLabel)
         titleLabel.text = "PopQuiz"
@@ -56,7 +55,7 @@ class LoginViewController: UIViewController {
         titleLabel.font = UIFont(name: "HelveticaNeue-Bold", size: 45)
         titleLabel.textColor = .white
         
-        //E-mail field
+        // E-mail field
         emailView = UIView()
         scrollView.addSubview(emailView)
         emailField = UITextField()
@@ -64,7 +63,7 @@ class LoginViewController: UIViewController {
         emailField.addTarget(self, action: #selector(updateEmail), for: .editingDidBegin)
         emailField.addTarget(self, action: #selector(doneEmail), for: .editingDidEnd)
 
-        //Password field
+        // Password field
         passwordView = UIView()
         scrollView.addSubview(passwordView)
         passwordField = UITextField()
@@ -81,7 +80,7 @@ class LoginViewController: UIViewController {
         passwordField.rightViewMode = .always
         passwordField.rightView = passwordButton
 
-        //Login button
+        // Login button
         loginButton = UIButton()
         scrollView.addSubview(loginButton)
         loginButton.isEnabled = false
@@ -267,8 +266,14 @@ class LoginViewController: UIViewController {
                 print("Password: ", password!)
                 
                 let quizzesViewController = QuizzesViewController()
-                quizzesViewController.modalPresentationStyle = .overFullScreen
-                present(quizzesViewController, animated: true, completion: nil)
+                quizzesViewController.tabBarItem = UITabBarItem(title: "Quiz", image:  UIImage(systemName: "stopwatch"), selectedImage: UIImage(systemName: "stopwatch.fill"))
+                let settingsViewController = SettingsViewController()
+                settingsViewController.tabBarItem = UITabBarItem(title: "Settings", image:  UIImage(systemName: "gearshape"), selectedImage: UIImage(systemName: "gearshape.fill"))
+                
+                let tabBarController = UITabBarController()
+                tabBarController.viewControllers = [quizzesViewController, settingsViewController]
+                tabBarController.modalPresentationStyle = .overFullScreen
+                present(tabBarController, animated: true, completion: nil)
                 
             case LoginStatus.error(let code, let text):
                 print("Error: \(text) (\(code))")

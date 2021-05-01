@@ -25,6 +25,7 @@ class QuizzesViewController: UIViewController {
     
     private var quizzes: [Quiz]!
     private var nba: Int?
+    private var category: [QuizCategory]?
     private var categoryNum: Int?
     
     private let dataService =  DataService()
@@ -182,8 +183,8 @@ class QuizzesViewController: UIViewController {
         
         tableView.autoPinEdge(.top, to: .bottom, of: infLabel, withOffset: 20)
         tableView.autoPinEdge(.bottom, to: .bottom, of: view, withOffset: 30)
-        tableView.autoAlignAxis(toSuperviewAxis: .vertical)
-        tableView.autoSetDimension(.width, toSize: 370)
+        tableView.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 20)
+        tableView.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 20)
 
     }
     
@@ -208,8 +209,8 @@ class QuizzesViewController: UIViewController {
             }
             
             // Sections
-            let category = quizzes.compactMap{ $0.category }
-            categoryNum = Set(category).count
+            category = Array(Set(quizzes.compactMap{ $0.category }))
+            categoryNum = category!.count
             tableView.reloadData()
             
         }
@@ -371,15 +372,8 @@ extension QuizzesViewController: UITableViewDelegate {
         sectionTitle.textColor = .white
         sectionTitle.font = UIFont(name: "HelveticaNeue-Bold", size: 25)
         
-        switch section {
-        case 0:
-            sectionTitle.text = QuizCategory.science.rawValue
-        case 1:
-            sectionTitle.text = QuizCategory.sport.rawValue
-        default:
-            sectionTitle.text = ""
-        }
-        
+        sectionTitle.text = category![section].rawValue
+
         headerView.addSubview(sectionTitle)
 
         return headerView

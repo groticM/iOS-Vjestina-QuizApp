@@ -11,7 +11,7 @@ class SettingsViewController: UIViewController{
     
     private var username: UILabel!
     private var name: UILabel!
-    private var logOut: UIButton!
+    private var logOutButton: UIButton!
     
     private let radius: CGFloat = 20
     
@@ -41,13 +41,14 @@ class SettingsViewController: UIViewController{
         name.font = UIFont(name: "HelveticaNeue-bold", size: 25)
         
         // Logout button
-        logOut = UIButton()
-        view.addSubview(logOut)
-        logOut.setTitle("Log out", for: .normal)
-        logOut.setTitleColor(Color().buttonTextColor, for: .normal)
-        logOut.titleLabel?.font = UIFont(name: "HelveticaNeue-bold", size: 20)
-        logOut.layer.cornerRadius = radius
-        logOut.backgroundColor = .white
+        logOutButton = UIButton()
+        view.addSubview(logOutButton)
+        logOutButton.setTitle("Log out", for: .normal)
+        logOutButton.setTitleColor(Color().buttonTextColor, for: .normal)
+        logOutButton.titleLabel?.font = UIFont(name: "HelveticaNeue-bold", size: 20)
+        logOutButton.layer.cornerRadius = radius
+        logOutButton.backgroundColor = .white
+        logOutButton.addTarget(self, action: #selector(logOut), for: .touchUpInside)
 
     }
     
@@ -60,10 +61,18 @@ class SettingsViewController: UIViewController{
         name.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 30)
         name.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 30)
         
-        logOut.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 80)
-        logOut.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 45)
-        logOut.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 45)
-        logOut.autoSetDimension(.height, toSize: 40)
+        logOutButton.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 80)
+        logOutButton.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 45)
+        logOutButton.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 45)
+        logOutButton.autoSetDimension(.height, toSize: 40)
+        
+    }
+    
+    @objc
+    private func logOut() {
+        let loginViewController = LoginViewController()
+        loginViewController.modalPresentationStyle = .overFullScreen
+        present(loginViewController, animated: true, completion: nil)
         
     }
 }
