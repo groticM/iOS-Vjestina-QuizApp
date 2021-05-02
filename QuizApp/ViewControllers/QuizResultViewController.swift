@@ -40,6 +40,7 @@ class QuizResultViewController: UIViewController{
         finishQuiz.titleLabel?.font = UIFont(name: "HelveticaNeue-bold", size: 20)
         finishQuiz.layer.cornerRadius = radius
         finishQuiz.backgroundColor = .white
+        finishQuiz.addTarget(self, action: #selector(finish), for: .touchUpInside)
 
     }
     
@@ -52,6 +53,12 @@ class QuizResultViewController: UIViewController{
         finishQuiz.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 45)
         finishQuiz.autoSetDimension(.height, toSize: 40)
         
+    }
+    
+    @objc
+    private func finish(){
+        let quizzesViewController = QuizzesViewController()
+        self.navigationController?.pushViewController(quizzesViewController, animated: true)
     }
 }
 

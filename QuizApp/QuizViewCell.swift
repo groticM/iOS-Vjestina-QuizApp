@@ -38,6 +38,7 @@ class QuizViewCell: UITableViewCell {
         levelView = UIView()
         
         contentView.addSubview(quizImage)
+        contentView.addSubview(levelView)
         contentView.addSubview(titleLabel)
         contentView.addSubview(quizDescription)
                 
@@ -46,16 +47,19 @@ class QuizViewCell: UITableViewCell {
         quizImage.autoSetDimensions(to: CGSize(width: 120, height: 120))
         
         levelView.autoPinEdge(toSuperviewSafeArea: .top, withInset: 15)
-        levelView.autoPinEdge(.leading, to: .trailing, of: quizImage, withOffset: 125)
-        levelView.autoSetDimensions(to: CGSize(width: 75, height: 25))
+        levelView.autoPinEdge(.leading, to: .trailing, of: quizImage, withOffset: 120)
+        levelView.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 20)
+        levelView.autoSetDimension(.height, toSize: 25)
         
-        titleLabel.autoPinEdge(.top, to: .bottom, of: levelView, withOffset: 10)
-        titleLabel.autoPinEdge(.leading, to: .trailing, of: quizImage, withOffset: 10)
-        titleLabel.autoSetDimensions(to: CGSize(width: 200, height: 45))
+        titleLabel.autoPinEdge(.top, to: .bottom, of: levelView, withOffset: 5)
+        titleLabel.autoPinEdge(.leading, to: .trailing, of: quizImage, withOffset: 5)
+        titleLabel.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 20)
+        titleLabel.autoSetDimension(.height, toSize: 45)
         
-        quizDescription.autoPinEdge(.leading, to: .trailing, of: quizImage, withOffset: 10)
         quizDescription.autoPinEdge(.top, to: .bottom, of: titleLabel)
-        quizDescription.autoSetDimensions(to: CGSize(width: 200, height: 75))
+        quizDescription.autoPinEdge(.leading, to: .trailing, of: quizImage, withOffset: 5)
+        quizDescription.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 20)
+        quizDescription.autoSetDimension(.height, toSize: 75)
         
     }
     
