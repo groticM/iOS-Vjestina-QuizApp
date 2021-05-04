@@ -18,15 +18,17 @@ class QuizViewController: UIViewController {
     
     public var quiz: Quiz
     public var questionNumber: Int
+    public var correct: Int
     
     private let dataService =  DataService()
     private let radius: CGFloat = 25
     private let alpha: CGFloat = 0.5
     private let font = UIFont(name: "HelveticaNeue-bold", size: 20)
     
-    init(quiz: Quiz, number: Int){
+    init(quiz: Quiz, number: Int, correct: Int){
         self.quiz = quiz
         self.questionNumber = number
+        self.correct = correct
         
         super.init(nibName: nil, bundle: nil)
         
@@ -180,13 +182,13 @@ class QuizViewController: UIViewController {
             
         }
         
-        if questionNumber < quiz.questions.count - 1 {
-            let quizViewController = QuizViewController(quiz: quiz, number: questionNumber+1)
+        /*if questionNumber < quiz.questions.count - 1 {
+            let quizViewController = QuizViewController(quiz: quiz, number: questionNumber+1, correct: correct)
             self.navigationController?.pushViewController(quizViewController, animated: true)
         } else {
-            let quizResultViewController = QuizResultViewController()
+            let quizResultViewController = QuizResultViewController(correct: correct, questionNumber: quiz.questions.count)
             self.navigationController?.pushViewController(quizResultViewController, animated: true)
-        }
+        }*/
         
     }
 }

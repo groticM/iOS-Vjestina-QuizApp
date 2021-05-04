@@ -195,7 +195,7 @@ class QuizzesViewController: UIViewController {
     
     @objc
     private func getQuizes(){
-        quizzes = dataService.fetchQuizes()
+        quizzes = dataService.fetchQuizes().sorted{ $0.category.rawValue < $1.category.rawValue }.sorted{ $0.title < $1.title }
         
         if quizzes != nil {
             errorView.isHidden = true
@@ -218,8 +218,6 @@ class QuizzesViewController: UIViewController {
             categoryNum = category!.count
             tableView.reloadData()
             
-            quizzes = quizzes.sorted{ $0.category.rawValue < $1.category.rawValue }.sorted{ $0.title < $1.title }
-            
         }
     }
 }
@@ -237,16 +235,10 @@ extension QuizzesViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         var count: Int!
+        let quizCategory = quizzes.compactMap{ $0.category }
         
-        switch section {
-        case 0:
-            count = 1
-        case 1:
-            count = 2
-        default:
-            count = 0
-        }
-        
+        count = quizCategory.filter{ $0.rawValue == category![section].rawValue}.count
+
         return count
     }
     
@@ -266,7 +258,6 @@ extension QuizzesViewController: UITableViewDataSource {
             cell.titleLabel.text = quizzes![num].title
             cell.quizDescription.text = quizzes![num].description
         }
-
 
         return cell
     }
@@ -323,7 +314,6 @@ extension QuizzesViewController: UITableViewDelegate {
     }
         
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        
         let headerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.size.width, height: 20))
         headerView.backgroundColor = Color().colorBackground
         
@@ -340,8 +330,8 @@ extension QuizzesViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let quizViewController = QuizViewController(quiz: quizzes![indexPath.section + indexPath.row], number: 0)
-        self.navigationController?.pushViewController(quizViewController, animated: true)
+        let pageViewController = PageViewController(quiz: quizzes![indexPath.section + indexPath.row])
+        self.navigationController?.pushViewController(pageViewController, animated: true)
 
     }
     

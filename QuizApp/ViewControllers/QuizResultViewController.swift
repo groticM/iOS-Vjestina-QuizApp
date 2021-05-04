@@ -12,7 +12,22 @@ class QuizResultViewController: UIViewController{
     private var correctAnswers: UILabel!
     private var finishQuiz: UIButton!
     
+    private var questionNumber: Int
+    private var correct: Int
+    
     private let radius: CGFloat = 20
+    
+    init(correct: Int, questionNumber: Int){
+        self.correct = correct
+        self.questionNumber = questionNumber
+        
+        super.init(nibName: nil, bundle: nil)
+        
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,7 +43,7 @@ class QuizResultViewController: UIViewController{
         // Correct answers label
         correctAnswers = UILabel()
         view.addSubview(correctAnswers)
-        correctAnswers.text = "4/8"
+        correctAnswers.text = "\(correct)/\(questionNumber+1)"
         correctAnswers.textColor = .white
         correctAnswers.font = UIFont(name: "HelveticaNeue", size: 130)
         
