@@ -71,8 +71,10 @@ class SettingsViewController: UIViewController{
     @objc
     private func logOut() {
         let loginViewController = LoginViewController()
-        loginViewController.modalPresentationStyle = .overFullScreen
-        present(loginViewController, animated: true, completion: nil)
+        
+        let newNavigationController = UINavigationController(rootViewController: loginViewController)
+        newNavigationController.modalPresentationStyle = .fullScreen
+        self.navigationController?.present(newNavigationController, animated: true, completion: nil)
         
     }
 }

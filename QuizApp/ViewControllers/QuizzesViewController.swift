@@ -27,18 +27,21 @@ class QuizzesViewController: UIViewController {
     private var nba: Int?
     private var category: [QuizCategory]?
     private var categoryNum: Int?
-    private var sport: [Quiz]?
-    private var science: [Quiz]?
     
     private let dataService =  DataService()
     private let cellIdentifier = "cellId"
     private let headerIdentifier = "headerId"
+    private let controllers: [UIViewController] = [
+        
+    ]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         buildViews()
         addConstraints()
+        
+        self.navigationController?.navigationBar.barTintColor = Color().colorBackground
         
     }
     
@@ -215,7 +218,7 @@ class QuizzesViewController: UIViewController {
             categoryNum = category!.count
             tableView.reloadData()
             
-            print(category)
+            quizzes = quizzes.sorted{ $0.category.rawValue < $1.category.rawValue }.sorted{ $0.title < $1.title }
             
         }
     }
@@ -249,9 +252,6 @@ extension QuizzesViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        sport = quizzes.filter{ $0.category == QuizCategory.sport }
-        science = quizzes.filter{ $0.category == QuizCategory.science }
-        
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as! QuizViewCell
         cell.backgroundColor = UIColor(red: 0.5804, green: 0.7725, blue: 0.9882, alpha: 1.0)
         cell.layer.cornerRadius = 20
@@ -259,19 +259,14 @@ extension QuizzesViewController: UITableViewDataSource {
         cell.layer.borderWidth = 5
         cell.layer.borderColor = Color().colorBackground.cgColor
         
-        if indexPath.section == 0 {
-            if science != nil {
-                cell.levelView = makeLevelView(level: science![indexPath.row].level, levelView: cell.levelView)
-                cell.titleLabel.text = science![indexPath.row].title
-                cell.quizDescription.text = science![indexPath.row].description
-            }
-        } else {
-            if sport != nil {
-                cell.levelView = makeLevelView(level: sport![indexPath.row].level, levelView: cell.levelView)
-                cell.titleLabel.text = sport![indexPath.row].title
-                cell.quizDescription.text = sport![indexPath.row].description
-            }
+        let num = indexPath.section + indexPath.row
+        
+        if quizzes != nil {
+            cell.levelView = makeLevelView(level: quizzes![num].level, levelView: cell.levelView)
+            cell.titleLabel.text = quizzes![num].title
+            cell.quizDescription.text = quizzes![num].description
         }
+
 
         return cell
     }
@@ -303,7 +298,7 @@ extension QuizzesViewController: UITableViewDataSource {
             starView2.image = fillStar
             starView3.image = fillStar
         default:
-            print("Bok!")
+            print("Error!")
         }
         
         levelView.addSubview(starView1)
@@ -345,15 +340,9 @@ extension QuizzesViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 0 {
-            let quizViewController = QuizViewController(quiz: science![indexPath.row], number: 0)
-            self.navigationController?.pushViewController(quizViewController, animated: true)
+        let quizViewController = QuizViewController(quiz: quizzes![indexPath.section + indexPath.row], number: 0)
+        self.navigationController?.pushViewController(quizViewController, animated: true)
 
-        } else {
-            let quizViewController = QuizViewController(quiz: sport![indexPath.row], number: 0)
-            self.navigationController?.pushViewController(quizViewController, animated: true)
-        }
     }
     
-
 }

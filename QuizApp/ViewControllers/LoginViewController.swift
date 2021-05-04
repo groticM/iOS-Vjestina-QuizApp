@@ -34,7 +34,6 @@ class LoginViewController: UIViewController {
         buildViews()
         addConstraints()
         
-        self.modalPresentationStyle = .fullScreen
         self.navigationController?.navigationBar.barTintColor = Color().colorBackground
         
     }
@@ -274,8 +273,10 @@ class LoginViewController: UIViewController {
                 
                 let tabBarController = UITabBarController()
                 tabBarController.viewControllers = [quizzesViewController, settingsViewController]
-                tabBarController.modalPresentationStyle = .overFullScreen
-                self.navigationController?.pushViewController(tabBarController, animated: true)
+                
+                let newNavigationController = UINavigationController(rootViewController: tabBarController)
+                newNavigationController.modalPresentationStyle = .fullScreen
+                self.navigationController?.present(newNavigationController, animated: true, completion: nil)
                 
             case LoginStatus.error(let code, let text):
                 print("Error: \(text) (\(code))")

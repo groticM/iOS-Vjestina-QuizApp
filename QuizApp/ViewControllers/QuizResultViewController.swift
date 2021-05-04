@@ -58,7 +58,11 @@ class QuizResultViewController: UIViewController{
     @objc
     private func finish(){
         let quizzesViewController = QuizzesViewController()
-        self.navigationController?.pushViewController(quizzesViewController, animated: true)
+        
+        let newNavigationController = UINavigationController(rootViewController: quizzesViewController)
+        newNavigationController.modalPresentationStyle = .fullScreen
+        self.navigationController?.present(newNavigationController, animated: true, completion: nil)
+        
     }
 }
 
