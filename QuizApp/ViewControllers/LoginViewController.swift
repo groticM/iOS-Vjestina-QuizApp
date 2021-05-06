@@ -275,7 +275,8 @@ class LoginViewController: UIViewController {
                 tabBarController.viewControllers = [quizzesViewController, settingsViewController]
                 
                 let newNavigationController = UINavigationController(rootViewController: tabBarController)
-                newNavigationController.modalPresentationStyle = .fullScreen
+                newNavigationController.modalPresentationStyle = .overFullScreen
+                newNavigationController.navigationBar.barTintColor = Color().colorBackground
                 self.navigationController?.present(newNavigationController, animated: true, completion: nil)
                 
             case LoginStatus.error(let code, let text):

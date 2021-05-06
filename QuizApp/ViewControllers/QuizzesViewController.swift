@@ -38,10 +38,10 @@ class QuizzesViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.navigationController?.navigationBar.barTintColor = Color().colorBackground
+        
         buildViews()
         addConstraints()
-        
-        self.navigationController?.navigationBar.barTintColor = Color().colorBackground
         
     }
     
@@ -330,6 +330,9 @@ extension QuizzesViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        /*let quizViewController = QuizViewController(quiz: quizzes![indexPath.section + indexPath.row], number: 0, correctNum: 0)
+        self.navigationController?.pushViewController(quizViewController, animated: true)*/
+        
         let pageViewController = PageViewController(quiz: quizzes![indexPath.section + indexPath.row])
         self.navigationController?.pushViewController(pageViewController, animated: true)
 

@@ -9,26 +9,29 @@ import UIKit
 
 class QuizViewController: UIViewController {
     private var questionNumberLabel: UILabel!
-    private var questionTrackerView: UIProgressView!
+    private var questionTrackerView: UIView!
     private var question: UILabel!
     private var first: UIButton!
     private var second: UIButton!
     private var third: UIButton!
     private var forth: UIButton!
+    private var questionView: UIView!
     
     public var quiz: Quiz
     public var questionNumber: Int
-    public var correct: Int
+    private var pageViewController: PageViewController
+    public var correct: Bool?
     
-    private let dataService =  DataService()
+    private let font = UIFont(name: "HelveticaNeue-bold", size: 20)
+    private let dataService: DataService =  DataService()
     private let radius: CGFloat = 25
     private let alpha: CGFloat = 0.5
-    private let font = UIFont(name: "HelveticaNeue-bold", size: 20)
+
     
-    init(quiz: Quiz, number: Int, correct: Int){
+    init(quiz: Quiz, number: Int, pageViewContoller: PageViewController){
         self.quiz = quiz
         self.questionNumber = number
-        self.correct = correct
+        self.pageViewController = pageViewContoller
         
         super.init(nibName: nil, bundle: nil)
         
@@ -58,15 +61,16 @@ class QuizViewController: UIViewController {
     func buildViews(){
         view.backgroundColor = Color().colorBackground
         
+        // Question Number
         questionNumberLabel = UILabel()
         view.addSubview(questionNumberLabel)
-        questionNumberLabel.text = "\(questionNumber+1)/\(quiz.questions.count)"
+        questionNumberLabel.text = "\(questionNumber + 1)/\(quiz.questions.count)"
         questionNumberLabel.font = font
         questionNumberLabel.textColor = .white
         
-        questionTrackerView = UIProgressView()
+        // Question Tracker
+        questionTrackerView = makeProgressView()
         view.addSubview(questionTrackerView)
-        questionTrackerView.progressViewStyle = .default
         
         question = UILabel()
         view.addSubview(question)
@@ -126,7 +130,7 @@ class QuizViewController: UIViewController {
         questionTrackerView.autoPinEdge(.top, to: .bottom, of: questionNumberLabel, withOffset: 10)
         questionTrackerView.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 20)
         questionTrackerView.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 20)
-        questionTrackerView.autoSetDimension(.height, toSize: 20)
+        questionTrackerView.autoSetDimension(.height, toSize: 4)
         
         question.autoPinEdge(.top, to: .bottom, of: questionTrackerView, withOffset: 20)
         question.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 20)
@@ -155,6 +159,51 @@ class QuizViewController: UIViewController {
         
     }
     
+    func makeProgressView() -> UIView {
+        let progressView = UIView()
+        let correctAnswers = pageViewController.getCorrect()
+        var numLeading: CGFloat = 0
+        print(self)
+        for number in 0...(quiz.questions.count - 1){
+            if number == questionNumber {
+                questionView = UIView()
+                progressView.addSubview(questionView)
+                questionView.backgroundColor = .white
+                
+                questionView.autoPinEdge(toSuperviewSafeArea: .top)
+                questionView.autoPinEdge(toSuperviewSafeArea: .bottom)
+                questionView.autoPinEdge(toSuperviewSafeArea: .leading, withInset: numLeading)
+                questionView.autoSetDimension(.height, toSize: 4)
+                questionView.autoSetDimension(.width, toSize: 35)
+                
+            } else {
+                let myView = UIView()
+                progressView.addSubview(myView)
+                
+                if correctAnswers[number] == 1{
+                    myView.backgroundColor = .systemGreen
+                } else if correctAnswers[number] == 0 {
+                    myView.backgroundColor = .systemRed
+                } else {
+                    myView.backgroundColor = .systemGray4
+                }
+                
+                myView.autoPinEdge(toSuperviewSafeArea: .top)
+                myView.autoPinEdge(toSuperviewSafeArea: .bottom)
+                myView.autoPinEdge(toSuperviewSafeArea: .leading, withInset: numLeading)
+                myView.autoSetDimension(.height, toSize: 4)
+                myView.autoSetDimension(.width, toSize: 35)
+                
+            }
+            
+            numLeading += 45
+            
+        }
+        
+        return progressView
+        
+    }
+    
     @objc
     private func checkAnswers(button: UIButton){
         let correctAnswer = quiz.questions[questionNumber].correctAnswer
@@ -166,9 +215,18 @@ class QuizViewController: UIViewController {
         
         if button.titleLabel?.text == quiz.questions[questionNumber].answers[correctAnswer]{
             button.backgroundColor = .systemGreen
+            questionView.backgroundColor = .systemGreen
+            
+            correct = true
+            pageViewController.updateCorrect(questionNumber: questionNumber, correct: correct!)
             
         } else {
             button.backgroundColor = .systemRed
+            questionView.backgroundColor = .systemRed
+            
+            correct = false
+            pageViewController.updateCorrect(questionNumber: questionNumber, correct: correct!)
+            
             
             if first.titleLabel?.text == quiz.questions[questionNumber].answers[correctAnswer] {
                 first.backgroundColor = .systemGreen
@@ -182,13 +240,17 @@ class QuizViewController: UIViewController {
             
         }
         
-        /*if questionNumber < quiz.questions.count - 1 {
-            let quizViewController = QuizViewController(quiz: quiz, number: questionNumber+1, correct: correct)
-            self.navigationController?.pushViewController(quizViewController, animated: true)
-        } else {
-            let quizResultViewController = QuizResultViewController(correct: correct, questionNumber: quiz.questions.count)
-            self.navigationController?.pushViewController(quizResultViewController, animated: true)
-        }*/
         
+        if questionNumber == quiz.questions.count - 1 {
+            let finalCorrectAnswers = pageViewController.getCorrect()
+            let finalCorrectAnswersCount = finalCorrectAnswers.filter{ $0 == 1 }.count
+            
+            let quizResultViewController = QuizResultViewController(questionNumber: quiz.questions.count, correctNumber: finalCorrectAnswersCount)
+            let newNavigationController = UINavigationController(rootViewController: quizResultViewController)
+            newNavigationController.modalPresentationStyle = .overFullScreen
+            self.navigationController?.present(newNavigationController, animated: true)
+        }
+
     }
+    
 }

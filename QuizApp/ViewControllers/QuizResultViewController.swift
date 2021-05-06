@@ -13,14 +13,14 @@ class QuizResultViewController: UIViewController{
     private var finishQuiz: UIButton!
     
     private var questionNumber: Int
-    private var correct: Int
+    private var correctNumber: Int
     
     private let radius: CGFloat = 20
     
-    init(correct: Int, questionNumber: Int){
-        self.correct = correct
+    init(questionNumber: Int, correctNumber: Int) {
         self.questionNumber = questionNumber
-        
+        self.correctNumber = correctNumber
+    
         super.init(nibName: nil, bundle: nil)
         
     }
@@ -31,6 +31,8 @@ class QuizResultViewController: UIViewController{
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.navigationController?.navigationBar.barTintColor = Color().colorBackground
         
         buildViews()
         addConstraints()
@@ -43,7 +45,7 @@ class QuizResultViewController: UIViewController{
         // Correct answers label
         correctAnswers = UILabel()
         view.addSubview(correctAnswers)
-        correctAnswers.text = "\(correct)/\(questionNumber+1)"
+        correctAnswers.text = "\(correctNumber)/\(questionNumber)"
         correctAnswers.textColor = .white
         correctAnswers.font = UIFont(name: "HelveticaNeue", size: 130)
         
@@ -73,9 +75,16 @@ class QuizResultViewController: UIViewController{
     @objc
     private func finish(){
         let quizzesViewController = QuizzesViewController()
+        quizzesViewController.tabBarItem = UITabBarItem(title: "Quiz", image:  UIImage(systemName: "stopwatch"), selectedImage: UIImage(systemName: "stopwatch.fill"))
+        let settingsViewController = SettingsViewController()
+        settingsViewController.tabBarItem = UITabBarItem(title: "Settings", image:  UIImage(systemName: "gearshape"), selectedImage: UIImage(systemName: "gearshape.fill"))
         
-        let newNavigationController = UINavigationController(rootViewController: quizzesViewController)
-        newNavigationController.modalPresentationStyle = .fullScreen
+        let tabBarController = UITabBarController()
+        tabBarController.viewControllers = [quizzesViewController, settingsViewController]
+        
+        let newNavigationController = UINavigationController(rootViewController: tabBarController)
+        newNavigationController.modalPresentationStyle = .overFullScreen
+        newNavigationController.navigationBar.barTintColor = Color().colorBackground
         self.navigationController?.present(newNavigationController, animated: true, completion: nil)
         
     }
