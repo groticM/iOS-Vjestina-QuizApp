@@ -74,7 +74,7 @@ class SettingsViewController: UIViewController{
         
         let newNavigationController = UINavigationController(rootViewController: loginViewController)
         newNavigationController.modalPresentationStyle = .fullScreen
-        self.navigationController?.present(newNavigationController, animated: true, completion: nil)
+        self.navigationController?.present(newNavigationController, animated: true)
         
     }
 }

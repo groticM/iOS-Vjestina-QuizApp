@@ -72,25 +72,23 @@ class QuizzesViewController: UIViewController {
         button.setTitleColor(Color().buttonTextColor, for: .normal)
         button.titleLabel?.font = UIFont(name: "HelveticaNeue-bold", size: 20)
         button.addTarget(self, action: #selector(getQuizes), for: .touchUpInside)
-        
-        // Error View
-        errorView = UIView()
-        scrollView.addSubview(errorView)
-        errorView.isHidden = false
 
         imageErrorView = UIImageView(image: UIImage(systemName: "xmark.circle"))
-        errorView.addSubview(imageErrorView)
+        scrollView.addSubview(imageErrorView)
+        imageErrorView.isHidden = false
         imageErrorView.contentMode = .scaleToFill
 
         errorTitle = UILabel()
-        errorView.addSubview(errorTitle)
+        scrollView.addSubview(errorTitle)
+        errorTitle.isHidden = false
         errorTitle.text = "Error"
         errorTitle.textColor = .white
         errorTitle.textAlignment = .center
         errorTitle.font = UIFont(name: "HelveticaNeue-Bold", size: 35)
 
         errorText = UILabel()
-        errorView.addSubview(errorText)
+        scrollView.addSubview(errorText)
+        errorText.isHidden = false
         errorText.numberOfLines = 0
         errorText.textAlignment = .center
         errorText.textColor = .white
@@ -104,7 +102,8 @@ class QuizzesViewController: UIViewController {
         
         imageBulbView = UIImageView(image: UIImage(named:"bulb"))
         funFactView.addSubview(imageBulbView)
-        
+        imageBulbView.isHidden = true
+
         funFactLabel = UILabel()
         funFactView.addSubview(funFactLabel)
         funFactLabel.text = " Fun Fact"
@@ -113,18 +112,18 @@ class QuizzesViewController: UIViewController {
         
         // Fun Fact Label
         infLabel = UILabel()
+        scrollView.addSubview(infLabel)
         infLabel.isHidden = true
         infLabel.font = UIFont(name: "HelveticaNeue", size: 20)
         infLabel.textColor = .white
         infLabel.numberOfLines = 0
-        scrollView.addSubview(infLabel)
         
         // TableView
         tableView = UITableView()
+        scrollView.addSubview(tableView)
         tableView.isHidden = true
         tableView.backgroundColor = Color().colorBackground
         tableView.separatorColor = Color().colorBackground
-        scrollView.addSubview(tableView)
         
         tableView.register(QuizViewCell.self, forCellReuseIdentifier: cellIdentifier)
         tableView.register(UITableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: headerIdentifier)
@@ -135,36 +134,32 @@ class QuizzesViewController: UIViewController {
     }
     
     private func addConstraints() {
-        scrollView.autoPinEdge(.top, to: .top, of: view, withOffset: 5)
-        scrollView.autoPinEdge(.bottom, to: .bottom, of: view, withOffset: 5)
-        scrollView.autoPinEdge(.leading, to: .leading, of: view, withOffset: 5)
-        scrollView.autoPinEdge(.trailing, to: .trailing, of: view, withOffset: 5)
+        scrollView.autoPinEdge(.top, to: .top, of: view)
+        scrollView.autoPinEdge(.bottom, to: .bottom, of: view)
+        scrollView.autoPinEdge(.leading, to: .leading, of: view)
+        scrollView.autoPinEdge(.trailing, to: .trailing, of: view)
         
-        titleLabel.autoPinEdge(toSuperviewSafeArea: .top, withInset: 10)
-        titleLabel.autoAlignAxis(toSuperviewAxis: .vertical)
+        titleLabel.autoPinEdge(.top, to: .top, of: scrollView, withOffset: 20)
         titleLabel.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 10)
         titleLabel.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 10)
+        titleLabel.autoSetDimension(.height, toSize: 30)
 
-        button.autoPinEdge(.top, to: .bottom, of: titleLabel, withOffset: 15)
-        button.autoSetDimensions(to: CGSize(width: 200, height: 40))
-        button.autoAlignAxis(toSuperviewAxis: .vertical)
+        button.autoPinEdge(.top, to: .bottom, of: titleLabel, withOffset: 20)
+        button.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 80)
+        button.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 80)
+        button.autoSetDimension(.height, toSize: 40)
         
-        errorView.autoPinEdge(.top, to: .bottom, of: button, withOffset: 10)
-        errorView.autoPinEdge(.bottom, to: .bottom, of: view, withOffset: 30)
-        errorView.autoPinEdge(toSuperviewSafeArea: .leading)
-        errorView.autoAlignAxis(toSuperviewAxis: .vertical)
-    
-        errorText.autoCenterInSuperview()
-        errorText.autoPinEdge(.top, to: .bottom, of: errorTitle, withOffset: 10)
-        errorText.autoAlignAxis(toSuperviewAxis: .vertical)
-        
-        errorTitle.autoPinEdge(.bottom, to: .top, of: errorText, withOffset: -10)
-        errorTitle.autoSetDimension(.width, toSize: 200)
-        errorTitle.autoAlignAxis(toSuperviewAxis: .vertical)
-        
-        imageErrorView.autoPinEdge(.bottom, to: .top, of: errorTitle, withOffset: -10)
+        imageErrorView.autoPinEdge(.top, to: .bottom, of: button, withOffset: 100)
         imageErrorView.autoSetDimensions(to: CGSize(width: 80, height: 80))
         imageErrorView.autoAlignAxis(toSuperviewAxis: .vertical)
+        
+        errorTitle.autoPinEdge(.top, to: .bottom, of: imageErrorView, withOffset: 20)
+        errorTitle.autoSetDimension(.width, toSize: 200)
+        errorTitle.autoAlignAxis(toSuperviewAxis: .vertical)
+    
+        errorText.autoPinEdge(.top, to: .bottom, of: errorTitle, withOffset: 20)
+        errorText.autoPinEdge(.bottom, to: .bottom, of: scrollView, withOffset: -10)
+        errorText.autoAlignAxis(toSuperviewAxis: .vertical)
         
         funFactView.autoPinEdge(.top, to: .bottom, of: button, withOffset: 10)
         funFactView.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 20)
@@ -187,7 +182,7 @@ class QuizzesViewController: UIViewController {
         infLabel.autoSetDimension(.height, toSize: 60)
         
         tableView.autoPinEdge(.top, to: .bottom, of: infLabel, withOffset: 20)
-        tableView.autoPinEdge(.bottom, to: .bottom, of: view, withOffset: 30)
+        tableView.autoPinEdge(.bottom, to: .bottom, of: view, withOffset: -20)
         tableView.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 20)
         tableView.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 20)
 
@@ -198,8 +193,11 @@ class QuizzesViewController: UIViewController {
         quizzes = dataService.fetchQuizes().sorted{ $0.category.rawValue < $1.category.rawValue }.sorted{ $0.title < $1.title }
         
         if quizzes != nil {
-            errorView.isHidden = true
+            imageErrorView.isHidden = true
+            errorTitle.isHidden = true
+            errorText.isHidden = true
             funFactView.isHidden = false
+            imageBulbView.isHidden = false
             infLabel.isHidden = false
             tableView.isHidden = false
             tableView.isHidden = false

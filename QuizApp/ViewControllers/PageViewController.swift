@@ -81,9 +81,9 @@ extension PageViewController: UIPageViewControllerDataSource {
     
     func pageViewController(_ pageViewController: UIPageViewController,
                             viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        let quizViewContorller = QuizzesViewController()
+        //let quizViewContorller = QuizzesViewController()
         
-        return quizViewContorller
+        return nil
     }
 
     func pageViewController(_ pageViewController: UIPageViewController,

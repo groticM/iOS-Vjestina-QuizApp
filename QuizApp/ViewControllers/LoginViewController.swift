@@ -110,7 +110,7 @@ class LoginViewController: UIViewController {
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.heightAnchor.constraint(equalTo: view.heightAnchor)
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
         
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -174,7 +174,7 @@ class LoginViewController: UIViewController {
             hiddenErrorLabel.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 10),
             hiddenErrorLabel.leadingAnchor.constraint(equalTo: passwordView.leadingAnchor, constant: 50),
             hiddenErrorLabel.trailingAnchor.constraint(equalTo: passwordView.trailingAnchor, constant: -50),
-            hiddenErrorLabel.heightAnchor.constraint(equalToConstant: 30)
+            hiddenErrorLabel.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: -250),
         ])
         
     }
