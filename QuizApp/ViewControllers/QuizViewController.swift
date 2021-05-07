@@ -256,9 +256,5 @@ class QuizViewController: UIViewController {
             self.navigationController?.present(newNavigationController, animated: true)
             
         }
-        
-
-
     }
-    
 }
