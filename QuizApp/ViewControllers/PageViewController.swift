@@ -11,6 +11,7 @@ class PageViewController: UIPageViewController {
     
     private var quiz: Quiz
     private var numberOfQuestion: Int
+    private var questionNumber: Int
     
     private var controllers: [QuizViewController] = []
     private var displayedIndex = 0
@@ -19,6 +20,7 @@ class PageViewController: UIPageViewController {
     init(quiz: Quiz){
         self.quiz = quiz
         self.numberOfQuestion = quiz.questions.count
+        self.questionNumber = 0
         
         for _ in 0...numberOfQuestion - 1 {
             self.correct.append(-1)
@@ -49,7 +51,7 @@ class PageViewController: UIPageViewController {
         pageAppearance.currentPageIndicatorTintColor = Color().colorBackground
         pageAppearance.pageIndicatorTintColor = Color().colorBackground
         
-        dataSource = self
+        //dataSource = self
         
         for questionNumber in 0...numberOfQuestion - 1 {
             controllers.append(QuizViewController(quiz: quiz, number: questionNumber, pageViewContoller: self))
@@ -65,6 +67,12 @@ class PageViewController: UIPageViewController {
             self.correct[questionNumber] = 1
         } else {
             self.correct[questionNumber] = 0
+        }
+        
+        if questionNumber < quiz.questions.count - 1 {
+            displayedIndex = questionNumber + 1
+            setViewControllers([controllers[displayedIndex]], direction: .forward, animated: true, completion: nil)
+    
         }
 
     }
@@ -89,8 +97,6 @@ extension PageViewController: UIPageViewControllerDataSource {
     
     func pageViewController(_ pageViewController: UIPageViewController,
                             viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        //let quizViewContorller = QuizzesViewController()
-        
         return nil
     }
 
@@ -107,10 +113,6 @@ extension PageViewController: UIPageViewControllerDataSource {
         displayedIndex = controllerIndex + 1
         return controllers[displayedIndex]
 
-    }
-    
-    func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
-        
     }
     
 }

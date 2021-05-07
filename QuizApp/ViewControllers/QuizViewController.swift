@@ -235,7 +235,6 @@ class QuizViewController: UIViewController {
             
         }
         
-        
         if questionNumber == quiz.questions.count - 1 {
             let finalCorrectAnswers = pageViewController.getCorrect()
             let finalCorrectAnswersCount = finalCorrectAnswers.filter{ $0 == 1 }.count
@@ -244,8 +243,10 @@ class QuizViewController: UIViewController {
             let newNavigationController = UINavigationController(rootViewController: quizResultViewController)
             newNavigationController.modalPresentationStyle = .overFullScreen
             self.navigationController?.present(newNavigationController, animated: true)
-    
+            
         }
+        
+
 
     }
     
