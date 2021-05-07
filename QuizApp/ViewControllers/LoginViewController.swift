@@ -258,8 +258,8 @@ class LoginViewController: UIViewController {
         let email = emailField.text
         let password = passwordField.text
         
-        //let loginStatus = data.login(email: email!, password: password!)
-        let loginStatus = LoginStatus.success
+        let loginStatus = data.login(email: email!, password: password!)
+        //let loginStatus = LoginStatus.success
         
         switch loginStatus {
             case LoginStatus.success:

@@ -16,6 +16,7 @@ class QuizViewController: UIViewController {
     private var third: UIButton!
     private var forth: UIButton!
     private var questionView: UIView!
+    private var scrollView: UIScrollView!
     
     public var quiz: Quiz
     public var questionNumber: Int
@@ -63,26 +64,30 @@ class QuizViewController: UIViewController {
     func buildViews(){
         view.backgroundColor = Color().colorBackground
         
+        // Scroll View
+        scrollView = UIScrollView()
+        view.addSubview(scrollView)
+        
         // Question Number
         questionNumberLabel = UILabel()
-        view.addSubview(questionNumberLabel)
+        scrollView.addSubview(questionNumberLabel)
         questionNumberLabel.text = "\(questionNumber + 1)/\(quiz.questions.count)"
         questionNumberLabel.font = font
         questionNumberLabel.textColor = .white
         
         // Question Tracker
         questionTrackerView = makeProgressView()
-        view.addSubview(questionTrackerView)
+        scrollView.addSubview(questionTrackerView)
         
         question = UILabel()
-        view.addSubview(question)
+        scrollView.addSubview(question)
         question.text = quiz.questions[questionNumber].question
         question.font = font
         question.textColor = .white
         question.numberOfLines = 0
         
         first = UIButton()
-        view.addSubview(first)
+        scrollView.addSubview(first)
         first.backgroundColor = .white
         first.alpha = alpha
         first.layer.cornerRadius = radius
@@ -92,7 +97,7 @@ class QuizViewController: UIViewController {
         first.addTarget(self, action: #selector(checkAnswers), for: .touchUpInside)
         
         second = UIButton()
-        view.addSubview(second)
+        scrollView.addSubview(second)
         second.backgroundColor = .white
         second.alpha = alpha
         second.layer.cornerRadius = radius
@@ -102,7 +107,7 @@ class QuizViewController: UIViewController {
         second.addTarget(self, action: #selector(checkAnswers), for: .touchUpInside)
         
         third = UIButton()
-        view.addSubview(third)
+        scrollView.addSubview(third)
         third.backgroundColor = .white
         third.alpha = alpha
         third.layer.cornerRadius = radius
@@ -112,7 +117,7 @@ class QuizViewController: UIViewController {
         third.addTarget(self, action: #selector(checkAnswers), for: .touchUpInside)
         
         forth = UIButton()
-        view.addSubview(forth)
+        scrollView.addSubview(forth)
         forth.backgroundColor = .white
         forth.alpha = alpha
         forth.layer.cornerRadius = radius
@@ -124,7 +129,12 @@ class QuizViewController: UIViewController {
     }
     
     func addConstraints(){
-        questionNumberLabel.autoPinEdge(toSuperviewSafeArea: .top, withInset: 20)
+        scrollView.autoPinEdge(.top, to: .top, of: view)
+        scrollView.autoPinEdge(.bottom, to: .bottom, of: view)
+        scrollView.autoPinEdge(.leading, to: .leading, of: view)
+        scrollView.autoPinEdge(.trailing, to: .trailing, of: view)
+        
+        questionNumberLabel.autoPinEdge(.top, to: .top, of: scrollView, withOffset: 90)
         questionNumberLabel.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 20)
         questionNumberLabel.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 20)
         questionNumberLabel.autoSetDimension(.height, toSize: 40)
@@ -155,6 +165,7 @@ class QuizViewController: UIViewController {
         third.autoSetDimension(.height, toSize: 55)
         
         forth.autoPinEdge(.top, to: .bottom, of: third, withOffset: 15)
+        forth.autoPinEdge(.bottom, to: .bottom, of: scrollView)
         forth.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 30)
         forth.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 30)
         forth.autoSetDimension(.height, toSize: 55)
