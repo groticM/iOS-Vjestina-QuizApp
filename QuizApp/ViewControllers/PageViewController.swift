@@ -34,6 +34,14 @@ class PageViewController: UIPageViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.navigationController?.navigationBar.tintColor = .white
+        
+        let titleItem = UILabel()
+        titleItem.text = "Pop Quiz"
+        titleItem.textColor = .white
+        titleItem.font = UIFont(name: "HelveticaNeue-Bold", size: 25)
+        self.navigationItem.titleView = titleItem
 
         view.backgroundColor = Color().colorBackground
         
