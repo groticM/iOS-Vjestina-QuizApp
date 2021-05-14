@@ -6,7 +6,7 @@
 //
 import UIKit
 
-class NetworkService {
+class NetworkService: NetworkServiceProtocol {
     
     func executeUrlRequest<T: Decodable>(_ request: URLRequest, completionHandler: @escaping(Result<T, RequestError>) -> Void) {
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in

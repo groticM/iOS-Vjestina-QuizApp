@@ -26,7 +26,6 @@ class QuizViewController: UIViewController {
     private var questionViews: [UIView] = []
     
     private let font = UIFont(name: "HelveticaNeue-bold", size: 20)
-    private let dataService: DataService =  DataService()
     private let radius: CGFloat = 25
     private let alpha: CGFloat = 0.5
 
