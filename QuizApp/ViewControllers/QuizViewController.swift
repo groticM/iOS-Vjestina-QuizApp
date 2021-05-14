@@ -195,9 +195,9 @@ class QuizViewController: UIViewController {
             myView.autoPinEdge(toSuperviewSafeArea: .bottom)
             myView.autoPinEdge(toSuperviewSafeArea: .leading, withInset: numLeading)
             myView.autoSetDimension(.height, toSize: 4)
-            myView.autoSetDimension(.width, toSize: 35)
+            myView.autoSetDimension(.width, toSize: 25)
             
-            numLeading += 45
+            numLeading += 35
                 
         }
         

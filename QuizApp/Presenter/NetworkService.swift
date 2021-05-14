@@ -42,6 +42,7 @@ class NetworkService: NetworkServiceProtocol {
     
     func login(username: String, password: String) -> LoginStatus {
         guard let url = URL(string: "https://iosquiz.herokuapp.com/api/session?username=\(username)&password=\(password)") else { return .error(500, "serverError") }
+        //let parameters = ["username": username, "password": password]
         
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -59,7 +60,6 @@ class NetworkService: NetworkServiceProtocol {
         }
         
         guard let loginStatus = loginStatus else { return .error(500, "serverError") }
-        print(loginStatus)
         
         return loginStatus
         

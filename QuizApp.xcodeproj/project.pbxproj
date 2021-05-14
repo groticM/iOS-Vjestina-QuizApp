@@ -105,6 +105,7 @@
 		C10AD7432618DEF0002B25FB /* QuizApp */ = {
 			isa = PBXGroup;
 			children = (
+				C178333B264F32BA001FD6E9 /* Presenter */,
 				C178332C264F1A7D001FD6E9 /* Models */,
 				C1C2C15F262F782800A81365 /* ViewControllers */,
 				C10AD7442618DEF0002B25FB /* AppDelegate.swift */,
@@ -112,9 +113,8 @@
 				C10AD74D2618DEF1002B25FB /* Assets.xcassets */,
 				C10AD74F2618DEF1002B25FB /* LaunchScreen.storyboard */,
 				C10AD7522618DEF1002B25FB /* Info.plist */,
+				C1C2C15C262F069C00A81365 /* Color.swift */,
 				C1450DDA263DED3100169762 /* QuizViewCell.swift */,
-				C1783333264F1CAC001FD6E9 /* NetworkService.swift */,
-				C1783337264F2100001FD6E9 /* NetworkServiceProtocol.swift */,
 				C1783339264F25B2001FD6E9 /* QuestionAnsweredDelegate.swift */,
 			);
 			path = QuizApp;
@@ -125,7 +125,6 @@
 			children = (
 				C1E6B02D261BBC4700362308 /* Quiz.swift */,
 				C1E6B027261BBC3B00362308 /* LoginStatus.swift */,
-				C1C2C15C262F069C00A81365 /* Color.swift */,
 				C1E6B02A261BBC4200362308 /* Question.swift */,
 				C1E6B030261BBC4D00362308 /* QuizCategory.swift */,
 				C178332D264F1AB5001FD6E9 /* RequestError.swift */,
@@ -134,6 +133,15 @@
 				C1783335264F1F6D001FD6E9 /* Login.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		C178333B264F32BA001FD6E9 /* Presenter */ = {
+			isa = PBXGroup;
+			children = (
+				C1783337264F2100001FD6E9 /* NetworkServiceProtocol.swift */,
+				C1783333264F1CAC001FD6E9 /* NetworkService.swift */,
+			);
+			path = Presenter;
 			sourceTree = "<group>";
 		};
 		C1C2C15F262F782800A81365 /* ViewControllers */ = {

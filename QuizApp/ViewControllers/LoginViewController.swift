@@ -259,11 +259,16 @@ class LoginViewController: UIViewController {
         let password = passwordField.text
         
         guard let username = email, let password = password else { return }
-        let success = networkService.login(username: username, password: password)
         
-        switch success {
-            case LoginStatus.success:
-                print("E-mail: ", email)
+        var success: LoginStatus!
+        DispatchQueue.global(qos: .utility).sync {
+           success = networkService.login(username: username, password: password)
+        }
+        print(success)
+        
+        switch success! {
+            case LoginStatus.success(let token, let userId):
+                print("E-mail: ", username)
                 print("Password: ", password)
                 
                 let quizzesViewController = QuizzesViewController()
@@ -277,7 +282,7 @@ class LoginViewController: UIViewController {
                 let newNavigationController = UINavigationController(rootViewController: tabBarController)
                 newNavigationController.modalPresentationStyle = .overFullScreen
                 newNavigationController.navigationBar.barTintColor = Color().colorBackground
-                self.navigationController?.present(newNavigationController, animated: true, completion: nil)
+                self.navigationController?.present(newNavigationController, animated: true)
                 
             case LoginStatus.error(let code, let text):
                 print("Error: \(text) (\(code))")
