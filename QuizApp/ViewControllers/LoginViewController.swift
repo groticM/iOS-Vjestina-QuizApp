@@ -258,27 +258,13 @@ class LoginViewController: UIViewController {
         let email = emailField.text
         let password = passwordField.text
         
-        //let loginStatus = data.login(email: email!, password: password!)
+        guard let username = email, let password = password else { return }
+        let success = networkService.login(username: username, password: password)
         
-        guard let url = URL(string: "https://iosquiz.herokuapp.com/api/session?username=\(email!)&password=\(password!)") else { return }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        networkService.executeUrlRequest(request) { (result: Result<Login, RequestError>) in
-            switch result {
-            case .failure(let error):
-                print(error)
-            case .success(let value):
-                print(value)
-            }
-        }
-        
-        switch LoginStatus.success {
+        switch success {
             case LoginStatus.success:
-                print("E-mail: ", email!)
-                print("Password: ", password!)
+                print("E-mail: ", email)
+                print("Password: ", password)
                 
                 let quizzesViewController = QuizzesViewController()
                 quizzesViewController.tabBarItem = UITabBarItem(title: "Quiz", image:  UIImage(systemName: "stopwatch"), selectedImage: UIImage(systemName: "stopwatch.fill"))
