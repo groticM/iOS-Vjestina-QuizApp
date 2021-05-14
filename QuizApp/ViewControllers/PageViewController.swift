@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PageViewController: UIPageViewController {
+class PageViewController: UIPageViewController, QuestionAnsweredDelegate {
     
     private var quiz: Quiz
     private var numberOfQuestion: Int
@@ -15,7 +15,7 @@ class PageViewController: UIPageViewController {
     
     private var controllers: [QuizViewController] = []
     private var displayedIndex = 0
-    private var correct: [Int] = []
+    private var correctArray: [Int] = []
     
     init(quiz: Quiz){
         self.quiz = quiz
@@ -23,7 +23,7 @@ class PageViewController: UIPageViewController {
         self.questionNumber = 0
         
         for _ in 0...numberOfQuestion - 1 {
-            self.correct.append(-1)
+            self.correctArray.append(-1)
         }
         
         super.init(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
@@ -54,7 +54,9 @@ class PageViewController: UIPageViewController {
         //dataSource = self
         
         for questionNumber in 0...numberOfQuestion - 1 {
-            controllers.append(QuizViewController(quiz: quiz, number: questionNumber, pageViewContoller: self))
+            let quizViewController = QuizViewController(quiz: quiz, number: questionNumber, correct: correctArray)
+            quizViewController.delegate = self
+            controllers.append(quizViewController)
         }
         
         guard let firstViewController = controllers.first else { return }
@@ -64,21 +66,27 @@ class PageViewController: UIPageViewController {
     
     public func updateCorrect(questionNumber: Int, correct: Bool){
         if correct {
-            self.correct[questionNumber] = 1
+            self.correctArray[questionNumber] = 1
         } else {
-            self.correct[questionNumber] = 0
+            self.correctArray[questionNumber] = 0
         }
         
         if questionNumber < quiz.questions.count - 1 {
             displayedIndex = questionNumber + 1
+            controllers[displayedIndex].correct = correctArray
             setViewControllers([controllers[displayedIndex]], direction: .forward, animated: true, completion: nil)
     
         }
-
-    }
-    
-    public func getCorrect() -> [Int] {
-        return correct
+        
+        if questionNumber == quiz.questions.count - 1 {
+            let finalCorrectAnswersCount = correctArray.filter{ $0 == 1 }.count
+            
+            let quizResultViewController = QuizResultViewController(questionNumber: quiz.questions.count, correctNumber: finalCorrectAnswersCount)
+            let newNavigationController = UINavigationController(rootViewController: quizResultViewController)
+            newNavigationController.modalPresentationStyle = .overFullScreen
+            self.navigationController?.present(newNavigationController, animated: true)
+            
+        }
 
     }
 

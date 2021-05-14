@@ -20,9 +20,9 @@ class QuizViewController: UIViewController {
     
     public var quiz: Quiz
     public var questionNumber: Int
-    public var correct: Bool?
+    public var delegate: QuestionAnsweredDelegate?
+    public var correct: [Int]
     
-    private var pageViewController: PageViewController
     private var questionViews: [UIView] = []
     
     private let font = UIFont(name: "HelveticaNeue-bold", size: 20)
@@ -30,10 +30,10 @@ class QuizViewController: UIViewController {
     private let alpha: CGFloat = 0.5
 
     
-    init(quiz: Quiz, number: Int, pageViewContoller: PageViewController){
+    init(quiz: Quiz, number: Int, correct: [Int]){
         self.quiz = quiz
         self.questionNumber = number
-        self.pageViewController = pageViewContoller
+        self.correct = correct
         
         super.init(nibName: nil, bundle: nil)
         
@@ -174,10 +174,6 @@ class QuizViewController: UIViewController {
     func makeProgressView() -> UIView {
         let progressView = UIView()
         
-        
-        let correctAnswers = pageViewController.getCorrect()
-        print(self)
-        
         var numLeading: CGFloat = 0
         for number in 0...(quiz.questions.count - 1){
 
@@ -186,9 +182,9 @@ class QuizViewController: UIViewController {
 
             if number == questionNumber{
                 myView.backgroundColor = .white
-            } else if correctAnswers[number] == 1{
+            } else if correct[number] == 1{
                 myView.backgroundColor = .systemGreen
-            } else if correctAnswers[number] == 0 {
+            } else if correct[number] == 0 {
                 myView.backgroundColor = .systemRed
             } else {
                 myView.backgroundColor = .systemGray4
@@ -222,15 +218,15 @@ class QuizViewController: UIViewController {
             button.backgroundColor = .systemGreen
             questionViews[questionNumber].backgroundColor = .systemGreen
             
-            correct = true
-            pageViewController.updateCorrect(questionNumber: questionNumber, correct: correct!)
+            let correct = true
+            delegate?.updateCorrect(questionNumber: questionNumber, correct: correct)
             
         } else {
             button.backgroundColor = .systemRed
             questionViews[questionNumber].backgroundColor = .systemRed
             
-            correct = false
-            pageViewController.updateCorrect(questionNumber: questionNumber, correct: correct!)
+            let correct = false
+            delegate?.updateCorrect(questionNumber: questionNumber, correct: correct)
             
             
             if first.titleLabel?.text == quiz.questions[questionNumber].answers[correctAnswer] {
@@ -245,15 +241,6 @@ class QuizViewController: UIViewController {
             
         }
         
-        if questionNumber == quiz.questions.count - 1 {
-            let finalCorrectAnswers = pageViewController.getCorrect()
-            let finalCorrectAnswersCount = finalCorrectAnswers.filter{ $0 == 1 }.count
-            
-            let quizResultViewController = QuizResultViewController(questionNumber: quiz.questions.count, correctNumber: finalCorrectAnswersCount)
-            let newNavigationController = UINavigationController(rootViewController: quizResultViewController)
-            newNavigationController.modalPresentationStyle = .overFullScreen
-            self.navigationController?.present(newNavigationController, animated: true)
-            
-        }
+
     }
 }
