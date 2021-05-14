@@ -17,6 +17,7 @@
 		C1783330264F1C10001FD6E9 /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = C178332F264F1C10001FD6E9 /* Result.swift */; };
 		C1783332264F1C69001FD6E9 /* Quizzes.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1783331264F1C69001FD6E9 /* Quizzes.swift */; };
 		C1783334264F1CAC001FD6E9 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1783333264F1CAC001FD6E9 /* NetworkService.swift */; };
+		C1783336264F1F6D001FD6E9 /* Login.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1783335264F1F6D001FD6E9 /* Login.swift */; };
 		C1AA0D9D263C62A100A9BBB1 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AA0D9C263C62A100A9BBB1 /* SettingsViewController.swift */; };
 		C1AA0DA0263C6C7C00A9BBB1 /* QuizResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AA0D9F263C6C7C00A9BBB1 /* QuizResultViewController.swift */; };
 		C1C2C15D262F069C00A81365 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C2C15C262F069C00A81365 /* Color.swift */; };
@@ -47,6 +48,7 @@
 		C178332F264F1C10001FD6E9 /* Result.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
 		C1783331264F1C69001FD6E9 /* Quizzes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Quizzes.swift; sourceTree = "<group>"; };
 		C1783333264F1CAC001FD6E9 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
+		C1783335264F1F6D001FD6E9 /* Login.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Login.swift; sourceTree = "<group>"; };
 		C1AA0D9C263C62A100A9BBB1 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		C1AA0D9F263C6C7C00A9BBB1 /* QuizResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizResultViewController.swift; sourceTree = "<group>"; };
 		C1C2C15C262F069C00A81365 /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
@@ -129,6 +131,7 @@
 				C178332D264F1AB5001FD6E9 /* RequestError.swift */,
 				C178332F264F1C10001FD6E9 /* Result.swift */,
 				C1783331264F1C69001FD6E9 /* Quizzes.swift */,
+				C1783335264F1F6D001FD6E9 /* Login.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -268,6 +271,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C1783336264F1F6D001FD6E9 /* Login.swift in Sources */,
 				C1783330264F1C10001FD6E9 /* Result.swift in Sources */,
 				C1E6B02B261BBC4200362308 /* Question.swift in Sources */,
 				C1E6B031261BBC4D00362308 /* QuizCategory.swift in Sources */,

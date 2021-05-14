@@ -28,7 +28,7 @@ class QuizzesViewController: UIViewController {
     private var category: [QuizCategory]?
     private var categoryNum: Int?
     
-    private let dataService =  DataService()
+    private let networkService = NetworkService()
     private let cellIdentifier = "cellId"
     private let headerIdentifier = "headerId"
     private let controllers: [UIViewController] = [
@@ -190,7 +190,21 @@ class QuizzesViewController: UIViewController {
     
     @objc
     private func getQuizes(){
-        quizzes = dataService.fetchQuizes().sorted{ $0.category.rawValue < $1.category.rawValue }.sorted{ $0.title < $1.title }
+        //quizzes = dataService.fetchQuizes().sorted{ $0.category.rawValue < $1.category.rawValue }.sorted{ $0.title < $1.title }
+        
+        guard let url = URL(string: "https://iosquiz.herokuapp.com/api/quizzes") else { return }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        
+        networkService.executeUrlRequest(request) { (result: Result<Quizzes, RequestError>) in
+            switch result {
+            case .failure(let error):
+                print(error)
+            case .success(let value):
+                print(value)
+            }
+        }
         
         if quizzes != nil {
             imageErrorView.isHidden = true

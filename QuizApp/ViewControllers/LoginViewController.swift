@@ -26,7 +26,7 @@ class LoginViewController: UIViewController {
     private let defaultButtonAlpha: CGFloat = 0.5
     private let radius: CGFloat = 25
     
-    private let data: DataService = DataService()
+    private let networkService = NetworkService()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -258,10 +258,24 @@ class LoginViewController: UIViewController {
         let email = emailField.text
         let password = passwordField.text
         
-        let loginStatus = data.login(email: email!, password: password!)
-        //let loginStatus = LoginStatus.success
+        //let loginStatus = data.login(email: email!, password: password!)
         
-        switch loginStatus {
+        guard let url = URL(string: "https://iosquiz.herokuapp.com/api/session?username=\(email!)&password=\(password!)") else { return }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        networkService.executeUrlRequest(request) { (result: Result<Login, RequestError>) in
+            switch result {
+            case .failure(let error):
+                print(error)
+            case .success(let value):
+                print(value)
+            }
+        }
+        
+        switch LoginStatus.success {
             case LoginStatus.success:
                 print("E-mail: ", email!)
                 print("Password: ", password!)
