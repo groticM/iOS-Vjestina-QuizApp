@@ -1,4 +1,4 @@
-enum Requesterror: Error {
+enum RequestError: Error {
     case clientError
     case serverError
     case noDataError
