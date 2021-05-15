@@ -257,10 +257,15 @@ class LoginViewController: UIViewController {
         
         let email = emailField.text
         let password = passwordField.text
-        
         guard let username = email, let password = password else { return }
-        let success = networkService.login(username: username, password: password)
         
+        var success: Bool?
+        let backgroundQueue = DispatchQueue(label: "login", qos: .userInitiated, attributes: .concurrent)
+        backgroundQueue.sync {
+            success = networkService.login(username: username, password: password)
+        }
+        
+        guard let success = success else {  return }
         if success {
             print("E-mail:  \(username)")
             print("Password: \(password)")

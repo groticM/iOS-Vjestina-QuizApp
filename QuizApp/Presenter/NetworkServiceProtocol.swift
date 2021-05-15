@@ -6,6 +6,6 @@ protocol NetworkServiceProtocol {
     
     func login(username: String, password: String) -> Bool
 
-    //func fetchQuizes() -> [Quiz]
+    func fetchQuizes() -> [Quiz]
 
 }

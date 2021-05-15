@@ -9,9 +9,14 @@ import UIKit
 class NetworkService: NetworkServiceProtocol {
     
     private var loginStatus: Bool?
+    private var quizzes: [Quiz]?
+    
+    public let defaults = UserDefaults.standard
     
     func executeUrlRequest<T: Decodable>(_ request: URLRequest, completionHandler: @escaping(Result<T, RequestError>) -> Void) {
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
+            
+            print(response)
             
             guard error == nil else {
                 completionHandler(.failure(.clientError))
@@ -42,13 +47,10 @@ class NetworkService: NetworkServiceProtocol {
     
     func login(username: String, password: String) -> Bool {
         guard let url = URL(string: "https://iosquiz.herokuapp.com/api/session?username=\(username)&password=\(password)") else { return false }
-        //let parameters = ["username": username, "password": password]
         
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        let defaults = UserDefaults.standard
         
         self.executeUrlRequest(request) { (result: Result<Login, RequestError>) in
             switch result {
@@ -59,8 +61,8 @@ class NetworkService: NetworkServiceProtocol {
                 self.loginStatus = true
                 print(value)
                 
-                defaults.set(value.token, forKey: "Token")
-                defaults.set(value.user_id, forKey: "UserID")
+                self.defaults.set(value.token, forKey: "Token")
+                self.defaults.set(value.user_id, forKey: "UserID")
                 
             }
         }
@@ -69,5 +71,24 @@ class NetworkService: NetworkServiceProtocol {
         
         return loginStatus
         
+    }
+    func fetchQuizes() -> [Quiz] {
+        guard let url = URL(string: "https://iosquiz.herokuapp.com/api/quizzes") else { return [] }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        
+        self.executeUrlRequest(request) { (result: Result<Quizzes, RequestError>) in
+            switch result {
+            case .failure(let error):
+                print(error)
+            case .success(let value):
+                //print(value)
+                self.quizzes = value.quizzes.sorted{ $0.category.rawValue < $1.category.rawValue }.sorted{ $0.title < $1.title }
+            }
+        }
+        guard let quizzes = quizzes else { return [] }
+
+        return quizzes
     }
 }

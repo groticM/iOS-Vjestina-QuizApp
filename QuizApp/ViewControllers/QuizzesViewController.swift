@@ -190,20 +190,11 @@ class QuizzesViewController: UIViewController {
     
     @objc
     private func getQuizes(){
-        guard let url = URL(string: "https://iosquiz.herokuapp.com/api/quizzes") else { return }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        
-        networkService.executeUrlRequest(request) { (result: Result<Quizzes, RequestError>) in
-            switch result {
-            case .failure(let error):
-                print(error)
-            case .success(let value):
-                //print(value)
-                self.quizzes = value.quizzes.sorted{ $0.category.rawValue < $1.category.rawValue }.sorted{ $0.title < $1.title }
-            }
+        let backgroundQueue = DispatchQueue(label: "load-quizzes", qos: .userInitiated, attributes: .concurrent)
+        backgroundQueue.sync {
+            quizzes = networkService.fetchQuizes()
         }
+
         guard let quizzes = quizzes else { return }
         
         imageErrorView.isHidden = true
