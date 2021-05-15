@@ -201,8 +201,7 @@ class QuizzesViewController: UIViewController {
                 print(error)
             case .success(let value):
                 //print(value)
-                self.quizzes = value.quizzes
-                    //.sorted{ $0.category.rawValue < $1.category.rawValue }.sorted{ $0.title < $1.title }
+                self.quizzes = value.quizzes.sorted{ $0.category.rawValue < $1.category.rawValue }.sorted{ $0.title < $1.title }
             }
         }
         guard let quizzes = quizzes else { return }

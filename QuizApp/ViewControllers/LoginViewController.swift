@@ -260,14 +260,14 @@ class LoginViewController: UIViewController {
         
         guard let username = email, let password = password else { return }
         
-        var success: LoginStatus!
+        var success: Bool!
         DispatchQueue.global(qos: .utility).sync {
            success = networkService.login(username: username, password: password)
         }
-        print(success)
+        print(success!)
         
         switch success! {
-            case LoginStatus.success(let token, let userId):
+        case true:
                 print("E-mail: ", username)
                 print("Password: ", password)
                 
@@ -278,16 +278,12 @@ class LoginViewController: UIViewController {
                 
                 let tabBarController = UITabBarController()
                 tabBarController.viewControllers = [quizzesViewController, settingsViewController]
+                self.navigationController?.setViewControllers([tabBarController], animated: true)
                 
-                let newNavigationController = UINavigationController(rootViewController: tabBarController)
-                newNavigationController.modalPresentationStyle = .overFullScreen
-                newNavigationController.navigationBar.barTintColor = Color().colorBackground
-                self.navigationController?.present(newNavigationController, animated: true)
-                
-            case LoginStatus.error(let code, let text):
-                print("Error: \(text) (\(code))")
+            case false:
+                print("Error)")
                 hiddenErrorLabel.isHidden = false
-                hiddenErrorLabel.text = "Error: \(text) (\(code))"
+                hiddenErrorLabel.text = "Error: Wrong password or username)"
                 
         }
     }

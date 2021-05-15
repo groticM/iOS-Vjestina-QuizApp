@@ -1,6 +1,6 @@
 enum LoginStatus {
 
-    case success(String, Int)
+    case success
     case error(Int, String)
 
 }

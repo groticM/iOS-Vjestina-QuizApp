@@ -105,14 +105,10 @@ class PageViewController: UIPageViewController, QuestionAnsweredDelegate {
             }
             
             let quizResultViewController = QuizResultViewController(questionNumber: quiz.questions.count, correctNumber: finalCorrectAnswersCount)
-            let newNavigationController = UINavigationController(rootViewController: quizResultViewController)
-            newNavigationController.modalPresentationStyle = .overFullScreen
-            self.navigationController?.present(newNavigationController, animated: true)
+            navigationController?.setViewControllers([quizResultViewController], animated: true)
             
         }
-
     }
-
 }
 
 extension PageViewController: UIPageViewControllerDataSource {
