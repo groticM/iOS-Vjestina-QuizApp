@@ -48,6 +48,8 @@ class NetworkService: NetworkServiceProtocol {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
+        let defaults = UserDefaults.standard
+        
         self.executeUrlRequest(request) { (result: Result<Login, RequestError>) in
             switch result {
             case .failure(let error):
@@ -56,6 +58,10 @@ class NetworkService: NetworkServiceProtocol {
             case .success(let value):
                 self.loginStatus = true
                 print(value)
+                
+                defaults.set(value.token, forKey: "Token")
+                defaults.set(value.user_id, forKey: "UserID")
+                
             }
         }
         
