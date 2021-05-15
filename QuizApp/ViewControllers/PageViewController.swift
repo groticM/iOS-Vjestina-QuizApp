@@ -92,30 +92,7 @@ class PageViewController: UIPageViewController, QuestionAnsweredDelegate {
             //let quizResults = QuizResults(quiz_id: quiz.id, user_id: 136, time: Double(time), no_of_correct: finalCorrectAnswersCount)
             //let data = try! JSONEncoder().encode(quizResults)
             
-            let parameters: [String: Any] = [
-                "quiz_id": quiz.id,
-                "user_id": 136,
-                "time": Double(time),
-                "no_of-correct": finalCorrectAnswersCount
-            ]
-            
-            guard let url = URL(string: "https://iosquiz.herokuapp.com/api/result") else { return }
-            
-            var request = URLRequest(url: url)
-            request.httpMethod = "POST"
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            
-            guard let httpBody = try? JSONSerialization.data(withJSONObject: parameters, options: []) else { return }
-            request.httpBody = httpBody
-            
-            networkService.executeUrlRequest(request) { (result: Result<Login, RequestError>) in
-                switch result {
-                case .failure(let error):
-                    print(error)
-                case .success(let value):
-                    print(value)
-                }
-            }
+            networkService.postResult(quizId: quiz.id, time: Double(time), finalCorrectAnswers: finalCorrectAnswersCount)
             
             let quizResultViewController = QuizResultViewController(questionNumber: quiz.questions.count, correctNumber: finalCorrectAnswersCount)
             navigationController?.setViewControllers([quizResultViewController], animated: true)

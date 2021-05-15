@@ -16,8 +16,6 @@ class NetworkService: NetworkServiceProtocol {
     func executeUrlRequest<T: Decodable>(_ request: URLRequest, completionHandler: @escaping(Result<T, RequestError>) -> Void) {
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
             
-            print(response)
-            
             guard error == nil else {
                 completionHandler(.failure(.clientError))
                 return
@@ -46,11 +44,12 @@ class NetworkService: NetworkServiceProtocol {
     }
     
     func login(username: String, password: String) -> Bool {
-        guard let url = URL(string: "https://iosquiz.herokuapp.com/api/session?username=\(username)&password=\(password)") else { return false }
+        guard let url = URL(string: "https://iosquiz.herokuapp.com/api/session") else { return false }
+        let bodyData = "username=\(username)&password=\(password)"
         
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = bodyData.data(using: String.Encoding.utf8)
         
         self.executeUrlRequest(request) { (result: Result<Login, RequestError>) in
             switch result {
@@ -72,6 +71,7 @@ class NetworkService: NetworkServiceProtocol {
         return loginStatus
         
     }
+    
     func fetchQuizes() -> [Quiz] {
         guard let url = URL(string: "https://iosquiz.herokuapp.com/api/quizzes") else { return [] }
         
@@ -90,5 +90,36 @@ class NetworkService: NetworkServiceProtocol {
         guard let quizzes = quizzes else { return [] }
 
         return quizzes
+    }
+    
+    func postResult(quizId: Int, time: Double, finalCorrectAnswers: Int) {
+        guard let url = URL(string: "https://iosquiz.herokuapp.com/api/result") else { return }
+        print(defaults.object(forKey: "user_id"))
+        print(defaults.object(forKey: "token"))
+        
+        let parameters: [String: Any] = [
+            "quiz_id": quizId,
+            "user_id": defaults.object(forKey: "user_id"),
+            "time": time,
+            "no_of-correct": finalCorrectAnswers
+        ]
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        guard let httpBody = try? JSONSerialization.data(withJSONObject: parameters, options: []) else { return }
+        print(httpBody)
+        request.httpBody = httpBody
+        
+        self.executeUrlRequest(request) { (result: Result<Login, RequestError>) in
+            switch result {
+            case .failure(let error):
+                print(error)
+            case .success(let value):
+                print(value)
+            }
+        }
     }
 }
