@@ -89,9 +89,6 @@ class PageViewController: UIPageViewController, QuestionAnsweredDelegate {
 
             let finalCorrectAnswersCount = correctArray.filter{ $0 == 1 }.count
             
-            //let quizResults = QuizResults(quiz_id: quiz.id, user_id: 136, time: Double(time), no_of_correct: finalCorrectAnswersCount)
-            //let data = try! JSONEncoder().encode(quizResults)
-            
             networkService.postResult(quizId: quiz.id, time: Double(time), finalCorrectAnswers: finalCorrectAnswersCount)
             
             let quizResultViewController = QuizResultViewController(questionNumber: quiz.questions.count, correctNumber: finalCorrectAnswersCount)

@@ -1,8 +1,16 @@
 struct QuizResults: Codable {
     
-    let quiz_id: Int
-    let user_id: Int
+    let quizId: Int
+    let userId: Int
     let time: Double
-    let no_of_correct: Int
+    let noOfCorrect: Int
+    
+    enum CodingKeys: String, CodingKey {
+        case quizId = "quiz_id"
+        case userId = "user_id"
+        case time
+        case noOfCorrect = "noOfCorrect"
+        
+    }
     
 }

@@ -21,6 +21,7 @@
 		C1783338264F2100001FD6E9 /* NetworkServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1783337264F2100001FD6E9 /* NetworkServiceProtocol.swift */; };
 		C178333A264F25B2001FD6E9 /* QuestionAnsweredDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1783339264F25B2001FD6E9 /* QuestionAnsweredDelegate.swift */; };
 		C178333D2650199E001FD6E9 /* QuizResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = C178333C2650199D001FD6E9 /* QuizResults.swift */; };
+		C178333F26503C10001FD6E9 /* ServerAnswers.swift in Sources */ = {isa = PBXBuildFile; fileRef = C178333E26503C10001FD6E9 /* ServerAnswers.swift */; };
 		C1AA0D9D263C62A100A9BBB1 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AA0D9C263C62A100A9BBB1 /* SettingsViewController.swift */; };
 		C1AA0DA0263C6C7C00A9BBB1 /* QuizResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AA0D9F263C6C7C00A9BBB1 /* QuizResultViewController.swift */; };
 		C1C2C15D262F069C00A81365 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C2C15C262F069C00A81365 /* Color.swift */; };
@@ -53,6 +54,7 @@
 		C1783337264F2100001FD6E9 /* NetworkServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServiceProtocol.swift; sourceTree = "<group>"; };
 		C1783339264F25B2001FD6E9 /* QuestionAnsweredDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionAnsweredDelegate.swift; sourceTree = "<group>"; };
 		C178333C2650199D001FD6E9 /* QuizResults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizResults.swift; sourceTree = "<group>"; };
+		C178333E26503C10001FD6E9 /* ServerAnswers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerAnswers.swift; sourceTree = "<group>"; };
 		C1AA0D9C263C62A100A9BBB1 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		C1AA0D9F263C6C7C00A9BBB1 /* QuizResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizResultViewController.swift; sourceTree = "<group>"; };
 		C1C2C15C262F069C00A81365 /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
@@ -134,6 +136,7 @@
 				C1783331264F1C69001FD6E9 /* Quizzes.swift */,
 				C1783335264F1F6D001FD6E9 /* Login.swift */,
 				C178333C2650199D001FD6E9 /* QuizResults.swift */,
+				C178333E26503C10001FD6E9 /* ServerAnswers.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -297,6 +300,7 @@
 				C1783332264F1C69001FD6E9 /* Quizzes.swift in Sources */,
 				C1783334264F1CAC001FD6E9 /* NetworkService.swift in Sources */,
 				C1AA0D9D263C62A100A9BBB1 /* SettingsViewController.swift in Sources */,
+				C178333F26503C10001FD6E9 /* ServerAnswers.swift in Sources */,
 				C1E6B028261BBC3B00362308 /* LoginStatus.swift in Sources */,
 				C1AA0DA0263C6C7C00A9BBB1 /* QuizResultViewController.swift in Sources */,
 				C1450DDB263DED3100169762 /* QuizViewCell.swift in Sources */,

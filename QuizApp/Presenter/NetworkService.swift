@@ -4,6 +4,7 @@
 //
 //  Created by Marta Grotic on 14.05.2021..
 //
+
 import UIKit
 
 class NetworkService: NetworkServiceProtocol {
@@ -36,6 +37,7 @@ class NetworkService: NetworkServiceProtocol {
                 completionHandler(.failure(.dataDecodingError))
                 return
             }
+            print(value)
             
             completionHandler(.success(value))
         }
@@ -94,32 +96,33 @@ class NetworkService: NetworkServiceProtocol {
     
     func postResult(quizId: Int, time: Double, finalCorrectAnswers: Int) {
         guard let url = URL(string: "https://iosquiz.herokuapp.com/api/result") else { return }
-        print(defaults.object(forKey: "user_id"))
-        print(defaults.object(forKey: "token"))
+
+        guard let token = defaults.object(forKey: "Token") else { return }
+        guard let userId = defaults.object(forKey: "UserID") else { return }
         
         let parameters: [String: Any] = [
             "quiz_id": quizId,
-            "user_id": defaults.object(forKey: "user_id"),
+            "user_id": userId,
             "time": time,
-            "no_of-correct": finalCorrectAnswers
+            "no_of_correct": finalCorrectAnswers
         ]
         
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("\(token)", forHTTPHeaderField: "Authorization")
         
         guard let httpBody = try? JSONSerialization.data(withJSONObject: parameters, options: []) else { return }
-        print(httpBody)
         request.httpBody = httpBody
         
-        self.executeUrlRequest(request) { (result: Result<Login, RequestError>) in
+        self.executeUrlRequest(request) { (result: Result<ServerAnswers, RequestError>) in
             switch result {
             case .failure(let error):
                 print(error)
             case .success(let value):
                 print(value)
             }
+            
         }
     }
 }
