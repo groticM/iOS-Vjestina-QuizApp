@@ -56,8 +56,6 @@ class PageViewController: UIPageViewController, QuestionAnsweredDelegate {
         pageAppearance.currentPageIndicatorTintColor = Color().colorBackground
         pageAppearance.pageIndicatorTintColor = Color().colorBackground
         
-        //dataSource = self
-        
         for questionNumber in 0...numberOfQuestion - 1 {
             let quizViewController = QuizViewController(quiz: quiz, number: questionNumber, correct: correctArray)
             quizViewController.delegate = self
