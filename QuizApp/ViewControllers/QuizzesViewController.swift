@@ -194,35 +194,41 @@ class QuizzesViewController: UIViewController {
         backgroundQueue.sync {
             quizzes = networkService.fetchQuizes()
         }
-
+        
         guard let quizzes = quizzes else { return }
         
-        imageErrorView.isHidden = true
-        errorTitle.isHidden = true
-        errorText.isHidden = true
-        funFactView.isHidden = false
-        imageBulbView.isHidden = false
-        infLabel.isHidden = false
-        tableView.isHidden = false
-        tableView.isHidden = false
-        
-        // Filter Quizzes for some words and count
-        let questions = quizzes.flatMap{ $0.questions }
-        let q = questions.filter{ $0.question.contains("NBA") }
-        nba = q.count
+        if quizzes.isEmpty {
+            let popUpWindow = PopUpWindowController()
+            self.navigationController?.present(popUpWindow, animated: true, completion: nil)
             
-        // Sections
-        category = Array(Set(quizzes.compactMap{ $0.category })).sorted{ $0.rawValue < $1.rawValue }
+        } else {
+            imageErrorView.isHidden = true
+            errorTitle.isHidden = true
+            errorText.isHidden = true
+            funFactView.isHidden = false
+            imageBulbView.isHidden = false
+            infLabel.isHidden = false
+            tableView.isHidden = false
+            tableView.isHidden = false
+            
+            // Filter Quizzes for some words and count
+            let questions = quizzes.flatMap{ $0.questions }
+            let q = questions.filter{ $0.question.contains("NBA") }
+            nba = q.count
+                
+            // Sections
+            category = Array(Set(quizzes.compactMap{ $0.category })).sorted{ $0.rawValue < $1.rawValue }
 
-        if nba != nil {
-            infLabel.text = "There are \(nba!) questions that contain the word \"NBA\"."
+            if nba != nil {
+                infLabel.text = "There are \(nba!) questions that contain the word \"NBA\"."
+            }
+                
+            guard let category = category else { return }
+            categoryNum = category.count
+
+            tableView.reloadData()
+                
         }
-            
-        guard let category = category else { return }
-        categoryNum = category.count
-
-        tableView.reloadData()
-            
     }
 }
 

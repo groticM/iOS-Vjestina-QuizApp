@@ -119,9 +119,6 @@
 				C10AD74D2618DEF1002B25FB /* Assets.xcassets */,
 				C10AD74F2618DEF1002B25FB /* LaunchScreen.storyboard */,
 				C10AD7522618DEF1002B25FB /* Info.plist */,
-				C1C2C15C262F069C00A81365 /* Color.swift */,
-				C1450DDA263DED3100169762 /* QuizViewCell.swift */,
-				C1783339264F25B2001FD6E9 /* QuestionAnsweredDelegate.swift */,
 			);
 			path = QuizApp;
 			sourceTree = "<group>";
@@ -129,6 +126,7 @@
 		C178332C264F1A7D001FD6E9 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				C1C2C15C262F069C00A81365 /* Color.swift */,
 				C1E6B02D261BBC4700362308 /* Quiz.swift */,
 				C1E6B027261BBC3B00362308 /* LoginStatus.swift */,
 				C1E6B02A261BBC4200362308 /* Question.swift */,
@@ -155,6 +153,8 @@
 		C1C2C15F262F782800A81365 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				C1450DDA263DED3100169762 /* QuizViewCell.swift */,
+				C1783339264F25B2001FD6E9 /* QuestionAnsweredDelegate.swift */,
 				C1E6B01B261B553800362308 /* LoginViewController.swift */,
 				C1E6B039261BC00B00362308 /* QuizzesViewController.swift */,
 				C1C3B64926389B670052A3D5 /* QuizViewController.swift */,

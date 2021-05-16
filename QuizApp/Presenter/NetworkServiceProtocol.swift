@@ -8,7 +8,7 @@ protocol NetworkServiceProtocol {
     
     func login(username: String, password: String) -> LoginStatus
 
-    func fetchQuizes() -> [Quiz]
+    func fetchQuizes() -> [Quiz]?
     
     func postResult(quizId: Int, time: Double, finalCorrectAnswers: Int) -> Bool
 

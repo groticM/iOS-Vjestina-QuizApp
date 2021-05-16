@@ -119,28 +119,33 @@ class NetworkService: NetworkServiceProtocol {
         
     }
     
-    func fetchQuizes() -> [Quiz] {
+    func fetchQuizes() -> [Quiz]? {
         let reachable = connection()
         
-        guard let url = URL(string: "https://iosquiz.herokuapp.com/api/quizzes") else { return [] }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        
-        self.executeUrlRequest(request) { (result: Result<Quizzes, RequestError>) in
-            switch result {
-            case .failure(let error):
-                print("Error: \(error)")
-            case .success(let value):
-                self.quizzes = value.quizzes.sorted{ $0.category.rawValue < $1.category.rawValue }.sorted{ $0.title < $1.title }
-            case .serverAnswer(let code):
-                print("Status code: \(code)")
-                
+        if reachable {
+            guard let url = URL(string: "https://iosquiz.herokuapp.com/api/quizzes") else { return [] }
+            
+            var request = URLRequest(url: url)
+            request.httpMethod = "GET"
+            
+            self.executeUrlRequest(request) { (result: Result<Quizzes, RequestError>) in
+                switch result {
+                case .failure(let error):
+                    print("Error: \(error)")
+                case .success(let value):
+                    self.quizzes = value.quizzes.sorted{ $0.category.rawValue < $1.category.rawValue }.sorted{ $0.title < $1.title }
+                case .serverAnswer(let code):
+                    print("Status code: \(code)")
+                    
+                }
             }
-        }
-        guard let quizzes = quizzes else { return [] }
 
-        return quizzes
+            return quizzes
+            
+        } else {
+            return []
+            
+        }
     }
     
     func postResult(quizId: Int, time: Double, finalCorrectAnswers: Int) -> Bool {
@@ -188,24 +193,10 @@ class NetworkService: NetworkServiceProtocol {
     
     func connection() -> Bool {
         self.reach = Reachability.forInternetConnection()
+        
         guard let reachable = reach?.isReachable() else { return false }
         
-        self.reach!.reachableBlock = { (reach: Reachability?) -> Void in
-            DispatchQueue.main.async {
-                print("REACHABLE!")
-                self.connectionStatus = true
-            }
-            
-        }
-            
-        self.reach!.unreachableBlock = { (reach: Reachability?) -> Void in
-            print("UNREACHABLE!")
-            self.connectionStatus = false
-                
-        }
-        
         return reachable
-
         
     }
 }
