@@ -259,14 +259,15 @@ class LoginViewController: UIViewController {
         let password = passwordField.text
         guard let username = email, let password = password else { return }
         
-        var success: Bool?
+        var success: LoginStatus?
         let backgroundQueue = DispatchQueue(label: "login", qos: .userInitiated, attributes: .concurrent)
         backgroundQueue.sync {
             success = networkService.login(username: username, password: password)
         }
         
         guard let success = success else {  return }
-        if success {
+        switch success {
+        case LoginStatus.success:
             print("E-mail:  \(username)")
             print("Password: \(password)")
             
@@ -279,10 +280,14 @@ class LoginViewController: UIViewController {
             tabBarController.viewControllers = [quizzesViewController, settingsViewController]
             self.navigationController?.setViewControllers([tabBarController], animated: true)
             
-        } else  {
+        case LoginStatus.error(_,_):
             print("Error: Wrong password or username")
             hiddenErrorLabel.isHidden = false
             hiddenErrorLabel.text = "Error: Wrong password or username"
+        
+        case LoginStatus.noInternetConnection:
+            let popUpWindow = PopUpWindowController()
+            self.navigationController?.present(popUpWindow, animated: true, completion: nil)
             
         }
     }

@@ -81,11 +81,7 @@ class QuizResultViewController: UIViewController{
         
         let tabBarController = UITabBarController()
         tabBarController.viewControllers = [quizzesViewController, settingsViewController]
-        
-        let newNavigationController = UINavigationController(rootViewController: tabBarController)
-        newNavigationController.modalPresentationStyle = .overFullScreen
-        newNavigationController.navigationBar.barTintColor = Color().colorBackground
-        self.navigationController?.present(newNavigationController, animated: true, completion: nil)
+        navigationController?.setViewControllers([tabBarController], animated: true)
         
     }
 }

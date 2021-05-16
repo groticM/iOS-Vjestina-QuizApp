@@ -89,11 +89,21 @@ class PageViewController: UIPageViewController, QuestionAnsweredDelegate {
 
             let finalCorrectAnswersCount = correctArray.filter{ $0 == 1 }.count
             
-            networkService.postResult(quizId: quiz.id, time: Double(time), finalCorrectAnswers: finalCorrectAnswersCount)
+            let success = networkService.postResult(quizId: quiz.id, time: Double(time), finalCorrectAnswers: finalCorrectAnswersCount)
             
-            let quizResultViewController = QuizResultViewController(questionNumber: quiz.questions.count, correctNumber: finalCorrectAnswersCount)
-            navigationController?.setViewControllers([quizResultViewController], animated: true)
-            
+            if success {
+                let quizResultViewController = QuizResultViewController(questionNumber: quiz.questions.count, correctNumber: finalCorrectAnswersCount)
+                navigationController?.setViewControllers([quizResultViewController], animated: true)
+            } else {
+                print("No Internet connection!")
+                
+                let popUpWindow = PopUpWindowController()
+                self.navigationController?.present(popUpWindow, animated: true, completion: nil)
+                
+                let quizResultViewController = QuizResultViewController(questionNumber: quiz.questions.count, correctNumber: finalCorrectAnswersCount)
+                navigationController?.setViewControllers([quizResultViewController], animated: true)
+                
+            }
         }
     }
 }

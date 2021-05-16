@@ -10,7 +10,7 @@ import Reachability
 
 class NetworkService: NetworkServiceProtocol {
     
-    private var loginStatus: Bool?
+    private var loginStatus: LoginStatus?
     private var quizzes: [Quiz]?
     
     var reach: Reachability?
@@ -81,39 +81,47 @@ class NetworkService: NetworkServiceProtocol {
         dataTask.resume()
     }
     
-    func login(username: String, password: String) -> Bool {
-        connection()
-        //print(self.connectionStatus)
-
-        guard let url = URL(string: "https://iosquiz.herokuapp.com/api/session") else { return false }
-        let bodyData = "username=\(username)&password=\(password)"
+    func login(username: String, password: String) -> LoginStatus {
+        let reachable = connection()
         
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.httpBody = bodyData.data(using: String.Encoding.utf8)
-        
-        self.executeUrlRequest(request) { (result: Result<Login, RequestError>) in
-            switch result {
-            case .failure(let error):
-                self.loginStatus = false
-                print("Error: \(error)")
-            case .success(let value):
-                self.loginStatus = true
-                self.defaults.set(value.token, forKey: "Token")
-                self.defaults.set(value.user_id, forKey: "UserID")
-            case .serverAnswer(let code):
-                print("Status code: \(code)")
-                
+        if reachable {
+             
+            guard let url = URL(string: "https://iosquiz.herokuapp.com/api/session") else { return LoginStatus.error(400, "Server error") }
+            let bodyData = "username=\(username)&password=\(password)"
+            
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.httpBody = bodyData.data(using: String.Encoding.utf8)
+            
+            self.executeUrlRequest(request) { (result: Result<Login, RequestError>) in
+                switch result {
+                case .failure(let error):
+                    self.loginStatus = LoginStatus.error(400, "Server error")
+                    print("Error: \(error)")
+                case .success(let value):
+                    self.loginStatus = LoginStatus.success
+                    self.defaults.set(value.token, forKey: "Token")
+                    self.defaults.set(value.user_id, forKey: "UserID")
+                case .serverAnswer(let code):
+                    print("Status code: \(code)")
+                    
+                }
             }
+        } else {
+            self.loginStatus = LoginStatus.noInternetConnection
+            
         }
-        
-        guard let loginStatus = loginStatus else { return false }
-        
+            
+        guard let loginStatus = loginStatus else { return LoginStatus.error(400, "Server error") }
+            
         return loginStatus
+
         
     }
     
     func fetchQuizes() -> [Quiz] {
+        let reachable = connection()
+        
         guard let url = URL(string: "https://iosquiz.herokuapp.com/api/quizzes") else { return [] }
         
         var request = URLRequest(url: url)
@@ -135,46 +143,58 @@ class NetworkService: NetworkServiceProtocol {
         return quizzes
     }
     
-    func postResult(quizId: Int, time: Double, finalCorrectAnswers: Int) {
-        guard let url = URL(string: "https://iosquiz.herokuapp.com/api/result") else { return }
+    func postResult(quizId: Int, time: Double, finalCorrectAnswers: Int) -> Bool {
+        let reachable = connection()
+        
+        if reachable {
+            guard let url = URL(string: "https://iosquiz.herokuapp.com/api/result") else { return false }
 
-        guard let token = defaults.object(forKey: "Token") else { return }
-        guard let userId = defaults.object(forKey: "UserID") else { return }
+            guard let token = defaults.object(forKey: "Token") else { return false }
+            guard let userId = defaults.object(forKey: "UserID") else { return false }
         
-        let parameters: [String: Any] = [
-            "quiz_id": quizId,
-            "user_id": userId,
-            "time": time,
-            "no_of_correct": finalCorrectAnswers
-        ]
+            let parameters: [String: Any] = [
+                "quiz_id": quizId,
+                "user_id": userId,
+                "time": time,
+                "no_of_correct": finalCorrectAnswers
+            ]
         
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("\(token)", forHTTPHeaderField: "Authorization")
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue("\(token)", forHTTPHeaderField: "Authorization")
         
-        guard let httpBody = try? JSONSerialization.data(withJSONObject: parameters, options: []) else { return }
-        request.httpBody = httpBody
+            guard let httpBody = try? JSONSerialization.data(withJSONObject: parameters, options: []) else { return false }
+            request.httpBody = httpBody
         
-        self.executeUrlRequestPostResult(request) { (result: Result<Int, RequestError>) in
-            switch result {
-            case .failure(let error):
-                print("Error: \(error)")
-            case .success(let value):
-                print(value)
-            case .serverAnswer(let code):
-                print("Status code: \(code.rawValue)")
+            self.executeUrlRequestPostResult(request) { (result: Result<Int, RequestError>) in
+                switch result {
+                case .failure(let error):
+                    print("Error: \(error)")
+                case .success(let value):
+                    print(value)
+                case .serverAnswer(let code):
+                    print("Status code: \(code.rawValue)")
+                }
             }
+            
+            return true
+            
+        } else {
+            return false
             
         }
     }
     
-    func connection() {
+    func connection() -> Bool {
         self.reach = Reachability.forInternetConnection()
+        guard let reachable = reach?.isReachable() else { return false }
         
         self.reach!.reachableBlock = { (reach: Reachability?) -> Void in
-            print("REACHABLE!")
-            self.connectionStatus = true
+            DispatchQueue.main.async {
+                print("REACHABLE!")
+                self.connectionStatus = true
+            }
             
         }
             
@@ -183,8 +203,8 @@ class NetworkService: NetworkServiceProtocol {
             self.connectionStatus = false
                 
         }
-            
-        self.reach!.startNotifier()
+        
+        return reachable
 
         
     }

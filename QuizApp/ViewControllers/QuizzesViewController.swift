@@ -213,7 +213,6 @@ class QuizzesViewController: UIViewController {
             
         // Sections
         category = Array(Set(quizzes.compactMap{ $0.category })).sorted{ $0.rawValue < $1.rawValue }
-        
 
         if nba != nil {
             infLabel.text = "There are \(nba!) questions that contain the word \"NBA\"."
