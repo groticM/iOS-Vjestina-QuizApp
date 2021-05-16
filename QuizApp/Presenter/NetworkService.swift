@@ -95,9 +95,8 @@ class NetworkService: NetworkServiceProtocol {
             
             self.executeUrlRequest(request) { (result: Result<Login, RequestError>) in
                 switch result {
-                case .failure(let error):
+                case .failure(_):
                     self.loginStatus = LoginStatus.error(400, "Server error")
-                    print("Error: \(error)")
                 case .success(let value):
                     self.loginStatus = LoginStatus.success
                     self.defaults.set(value.token, forKey: "Token")
@@ -193,9 +192,7 @@ class NetworkService: NetworkServiceProtocol {
     
     func connection() -> Bool {
         self.reach = Reachability.forInternetConnection()
-        
         guard let reachable = reach?.isReachable() else { return false }
-        
         return reachable
         
     }
