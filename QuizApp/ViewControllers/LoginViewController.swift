@@ -8,7 +8,6 @@
 import Foundation
 import UIKit
 
-
 class LoginViewController: UIViewController {
     
     private var titleLabel: UILabel!
@@ -16,15 +15,18 @@ class LoginViewController: UIViewController {
     private var passwordField: UITextField!
     private var loginButton: UIButton!
     private var passwordButton: UIButton!
-    private var iconClick: Bool = true
     private var emailView: UIView!
     private var passwordView: UIView!
     private var hiddenErrorLabel: UILabel!
+    private var scrollView: UIScrollView!
     
-    private let defaultTextFieldAlpha: CGFloat = 0.3
+    private var iconClick: Bool = true
+    
+    private let defaultTextFieldAlpha: CGFloat = 0.4
     private let defaultButtonAlpha: CGFloat = 0.5
-    private let colorBackground = UIColor(red: 0.2471, green: 0.5922, blue: 0.9882, alpha: 1.0)
-    private let colorTextField = UIColor(red: 0.8118, green: 0.8941, blue: 0.9882, alpha: 1.0)
+    private let radius: CGFloat = 25
+    
+    private let data: DataService = DataService()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,34 +34,39 @@ class LoginViewController: UIViewController {
         buildViews()
         addConstraints()
         
+        self.navigationController?.navigationBar.barTintColor = Color().colorBackground
+        
     }
     
     private func buildViews() {
-        let radius: CGFloat = 25
+        view.backgroundColor = Color().colorBackground
         
-        view.backgroundColor = colorBackground
-        
-        //Title label
+        // ScrollView
+        scrollView = UIScrollView()
+        view.addSubview(scrollView)
+        scrollView.alwaysBounceVertical = true
+        scrollView.automaticallyAdjustsScrollIndicatorInsets = true
+
+        // Title label
         titleLabel = UILabel()
-        view.addSubview(titleLabel)
+        scrollView.addSubview(titleLabel)
         titleLabel.text = "PopQuiz"
         titleLabel.textAlignment = .center
         titleLabel.font = UIFont(name: "HelveticaNeue-Bold", size: 45)
         titleLabel.textColor = .white
         
-        //E-mail field
+        // E-mail field
         emailView = UIView()
+        scrollView.addSubview(emailView)
         emailField = UITextField()
-        view.addSubview(emailView)
         designTextField(viewField: emailView, textField: emailField, text: "E-mail", radius: radius)
         emailField.addTarget(self, action: #selector(updateEmail), for: .editingDidBegin)
         emailField.addTarget(self, action: #selector(doneEmail), for: .editingDidEnd)
-        emailField.bounds.inset(by: UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15))
-        
-        //Password field
+
+        // Password field
         passwordView = UIView()
+        scrollView.addSubview(passwordView)
         passwordField = UITextField()
-        view.addSubview(passwordView)
         passwordField.isSecureTextEntry.toggle()
         designTextField(viewField: passwordView, textField: passwordField, text: "Password", radius: radius)
         passwordField.addTarget(self, action: #selector(updatePassword), for: .editingDidBegin)
@@ -73,12 +80,13 @@ class LoginViewController: UIViewController {
         passwordField.rightViewMode = .always
         passwordField.rightView = passwordButton
 
-        //Login button
+        // Login button
         loginButton = UIButton()
-        view.addSubview(loginButton)
+        scrollView.addSubview(loginButton)
         loginButton.isEnabled = false
         loginButton.setTitle("Login", for: .normal)
-        loginButton.setTitleColor(.black, for: .normal)
+        loginButton.setTitleColor(Color().buttonTextColor, for: .normal)
+        loginButton.titleLabel?.font = UIFont(name: "HelveticaNeue-bold", size: 20)
         loginButton.layer.cornerRadius = radius
         loginButton.backgroundColor = .white
         loginButton.alpha = defaultButtonAlpha
@@ -86,89 +94,103 @@ class LoginViewController: UIViewController {
         
         // Error label
         hiddenErrorLabel = UILabel()
-        view.addSubview(hiddenErrorLabel)
+        scrollView.addSubview(hiddenErrorLabel)
         hiddenErrorLabel.isHidden = true
-        hiddenErrorLabel.backgroundColor = colorBackground
+        hiddenErrorLabel.backgroundColor = Color().colorBackground
         hiddenErrorLabel.layer.cornerRadius = radius
         hiddenErrorLabel.clipsToBounds = true
         hiddenErrorLabel.textAlignment = .center
         hiddenErrorLabel.font = UIFont(name: "HelveticaNeue-Bold", size: 14)
         
-        
     }
     
     private func addConstraints() {
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+        
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 120),
-            titleLabel.heightAnchor.constraint(equalToConstant: 50),
-            titleLabel.widthAnchor.constraint(equalToConstant: 220)
+            titleLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+            titleLabel.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 80),
+            titleLabel.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 35),
+            titleLabel.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -35),
+            titleLabel.heightAnchor.constraint(equalToConstant: 50)
         ])
         
         emailView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            emailView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            emailView.topAnchor.constraint(equalTo: view.topAnchor, constant: 300),
-            emailView.heightAnchor.constraint(equalToConstant: 50),
-            emailView.widthAnchor.constraint(equalToConstant: 325)
+            emailView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+            emailView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 130),
+            emailView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 35),
+            emailView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -35),
+            emailView.heightAnchor.constraint(equalToConstant: 50)
         ])
         
         emailField.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             emailField.centerXAnchor.constraint(equalTo: emailView.centerXAnchor),
             emailField.topAnchor.constraint(equalTo: emailView.topAnchor),
-            emailField.heightAnchor.constraint(equalToConstant: 50),
-            emailField.widthAnchor.constraint(equalToConstant: 300)
+            emailField.leadingAnchor.constraint(equalTo: emailView.leadingAnchor, constant: 10),
+            emailField.trailingAnchor.constraint(equalTo: emailView.trailingAnchor, constant: -10),
+            emailField.heightAnchor.constraint(equalToConstant: 50)
         ])
         
         passwordView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            passwordView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            passwordView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             passwordView.topAnchor.constraint(equalTo: emailView.bottomAnchor, constant: 10),
-            passwordView.heightAnchor.constraint(equalToConstant: 50),
-            passwordView.widthAnchor.constraint(equalTo: emailView.widthAnchor)
+            passwordView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 35),
+            passwordView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -35),
+            passwordView.heightAnchor.constraint(equalToConstant: 50)
+            
         ])
         
         passwordField.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             passwordField.centerXAnchor.constraint(equalTo: passwordView.centerXAnchor),
             passwordField.topAnchor.constraint(equalTo: passwordView.topAnchor),
-            passwordField.heightAnchor.constraint(equalToConstant: 50),
-            passwordField.widthAnchor.constraint(equalToConstant: 300)
+            passwordField.leadingAnchor.constraint(equalTo: passwordView.leadingAnchor, constant: 10),
+            passwordField.trailingAnchor.constraint(equalTo: passwordView.trailingAnchor, constant: -10),
+            passwordField.heightAnchor.constraint(equalToConstant: 50)
         ])
         
         loginButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            loginButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loginButton.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             loginButton.topAnchor.constraint(equalTo: passwordView.bottomAnchor, constant: 10),
-            loginButton.heightAnchor.constraint(equalToConstant: 50),
-            loginButton.widthAnchor.constraint(equalTo: emailView.widthAnchor)
+            loginButton.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor, constant: 35),
+            loginButton.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor, constant: -35),
+            loginButton.heightAnchor.constraint(equalToConstant: 50)
         ])
         
         hiddenErrorLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            hiddenErrorLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            hiddenErrorLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             hiddenErrorLabel.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 10),
-            hiddenErrorLabel.heightAnchor.constraint(equalToConstant: 30),
-            hiddenErrorLabel.widthAnchor.constraint(equalToConstant: 200)
+            hiddenErrorLabel.leadingAnchor.constraint(equalTo: passwordView.leadingAnchor, constant: 50),
+            hiddenErrorLabel.trailingAnchor.constraint(equalTo: passwordView.trailingAnchor, constant: -50),
+            hiddenErrorLabel.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: -250),
         ])
+        
     }
     
     private func designTextField(viewField: UIView,textField: UITextField, text: String, radius: CGFloat){
-        
+        viewField.backgroundColor = Color().colorTextField
         viewField.layer.cornerRadius = radius
         viewField.clipsToBounds = true
-        viewField.backgroundColor = colorTextField
         viewField.alpha = defaultTextFieldAlpha
+        viewField.addSubview(textField)
         
+        textField.backgroundColor = Color().colorTextField
         textField.placeholder = text
         textField.tintColor = .black
         textField.font = UIFont(name: "HelveticaNeue-Bold", size: 20)
-        textField.backgroundColor = colorTextField
         textField.autocapitalizationType = .none
-        
-        viewField.addSubview(textField)
         
     }
     
@@ -178,11 +200,13 @@ class LoginViewController: UIViewController {
         emailView.layer.masksToBounds = true
         emailView.layer.borderWidth = 2
         emailView.layer.borderColor = UIColor.black.cgColor
+        
     }
     
     @objc
     private func doneEmail() {
         emailView.layer.borderWidth = 0
+        
     }
     
     @objc
@@ -191,6 +215,7 @@ class LoginViewController: UIViewController {
         passwordView.layer.masksToBounds = true
         passwordView.layer.borderWidth = 2
         passwordView.layer.borderColor = UIColor.black.cgColor
+        
     }
     
     @objc
@@ -204,49 +229,61 @@ class LoginViewController: UIViewController {
         } else {
             loginButton.alpha = defaultButtonAlpha
         }
+        
     }
     
     @objc
     private func donePassword() {
         passwordView.layer.borderWidth = 0
+        
     }
     
     @objc
     private func seePassword() {
-        if(iconClick == true) {
+        if passwordField.isSecureTextEntry{
             passwordButton.setBackgroundImage(UIImage(systemName: "eye.slash"), for: .normal)
-            passwordField.isSecureTextEntry = false
         } else {
             passwordButton.setBackgroundImage(UIImage(systemName: "eye"), for: .normal)
-            passwordField.isSecureTextEntry  = true
         }
-
-        iconClick = !iconClick
+        passwordField.isSecureTextEntry.toggle()
         
     }
     
     @objc
     private func login(){
-        
         UIView.animate(withDuration: 0.2,
-                       animations: {self.loginButton.backgroundColor = .darkGray},
-                       completion: { _ in self.loginButton.backgroundColor = .white}
-        )
+                       animations: { self.loginButton.backgroundColor = .darkGray },
+                       completion: { _ in self.loginButton.backgroundColor = .white })
         
         let email = emailField.text
         let password = passwordField.text
         
-        let data: DataService = DataService()
         let loginStatus = data.login(email: email!, password: password!)
+        //let loginStatus = LoginStatus.success
         
         switch loginStatus {
             case LoginStatus.success:
                 print("E-mail: ", email!)
                 print("Password: ", password!)
+                
+                let quizzesViewController = QuizzesViewController()
+                quizzesViewController.tabBarItem = UITabBarItem(title: "Quiz", image:  UIImage(systemName: "stopwatch"), selectedImage: UIImage(systemName: "stopwatch.fill"))
+                let settingsViewController = SettingsViewController()
+                settingsViewController.tabBarItem = UITabBarItem(title: "Settings", image:  UIImage(systemName: "gearshape"), selectedImage: UIImage(systemName: "gearshape.fill"))
+                
+                let tabBarController = UITabBarController()
+                tabBarController.viewControllers = [quizzesViewController, settingsViewController]
+                
+                let newNavigationController = UINavigationController(rootViewController: tabBarController)
+                newNavigationController.modalPresentationStyle = .overFullScreen
+                newNavigationController.navigationBar.barTintColor = Color().colorBackground
+                self.navigationController?.present(newNavigationController, animated: true, completion: nil)
+                
             case LoginStatus.error(let code, let text):
                 print("Error: \(text) (\(code))")
                 hiddenErrorLabel.isHidden = false
                 hiddenErrorLabel.text = "Error: \(text) (\(code))"
+                
         }
     }
 }
