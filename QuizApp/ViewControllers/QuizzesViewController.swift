@@ -31,9 +31,7 @@ class QuizzesViewController: UIViewController {
     private let networkService = NetworkService()
     private let cellIdentifier = "cellId"
     private let headerIdentifier = "headerId"
-    private let controllers: [UIViewController] = [
-        
-    ]
+    private let controllers: [UIViewController] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -124,10 +122,9 @@ class QuizzesViewController: UIViewController {
         tableView.isHidden = true
         tableView.backgroundColor = Color().colorBackground
         tableView.separatorColor = Color().colorBackground
-        
+
         tableView.register(QuizViewCell.self, forCellReuseIdentifier: cellIdentifier)
         tableView.register(UITableViewHeaderFooterView.self, forHeaderFooterViewReuseIdentifier: headerIdentifier)
-        
         tableView.dataSource = self
         tableView.delegate = self
         

@@ -34,6 +34,7 @@
 		C1E6B02E261BBC4700362308 /* Quiz.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E6B02D261BBC4700362308 /* Quiz.swift */; };
 		C1E6B031261BBC4D00362308 /* QuizCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E6B030261BBC4D00362308 /* QuizCategory.swift */; };
 		C1E6B03A261BC00B00362308 /* QuizzesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E6B039261BC00B00362308 /* QuizzesViewController.swift */; };
+		C1F055262659693F005AB3D5 /* SearchQuizViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F055252659693F005AB3D5 /* SearchQuizViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -68,6 +69,7 @@
 		C1E6B02D261BBC4700362308 /* Quiz.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Quiz.swift; sourceTree = "<group>"; };
 		C1E6B030261BBC4D00362308 /* QuizCategory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuizCategory.swift; sourceTree = "<group>"; };
 		C1E6B039261BC00B00362308 /* QuizzesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizzesViewController.swift; sourceTree = "<group>"; };
+		C1F055252659693F005AB3D5 /* SearchQuizViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchQuizViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -153,6 +155,7 @@
 		C1C2C15F262F782800A81365 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				C1F055252659693F005AB3D5 /* SearchQuizViewController.swift */,
 				C1450DDA263DED3100169762 /* QuizViewCell.swift */,
 				C1783339264F25B2001FD6E9 /* QuestionAnsweredDelegate.swift */,
 				C1E6B01B261B553800362308 /* LoginViewController.swift */,
@@ -309,6 +312,7 @@
 				C1AA0DA0263C6C7C00A9BBB1 /* QuizResultViewController.swift in Sources */,
 				C1450DDB263DED3100169762 /* QuizViewCell.swift in Sources */,
 				C10AD7452618DEF0002B25FB /* AppDelegate.swift in Sources */,
+				C1F055262659693F005AB3D5 /* SearchQuizViewController.swift in Sources */,
 				C1E6B025261B5C6000362308 /* SceneDelegate.swift in Sources */,
 				C178332E264F1AB5001FD6E9 /* RequestError.swift in Sources */,
 				C12FE72E2641390C00B8D684 /* PageViewController.swift in Sources */,
