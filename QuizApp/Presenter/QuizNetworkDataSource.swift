@@ -8,10 +8,9 @@
 import UIKit
 import Reachability
 
-class NetworkService: NetworkServiceProtocol {
+class QuizNetworkDataSource {
     
     private var loginStatus: LoginStatus?
-    private var quizzes: [Quiz]?
     
     var reach: Reachability?
     var connectionStatus: Bool?
@@ -81,12 +80,12 @@ class NetworkService: NetworkServiceProtocol {
         dataTask.resume()
     }
     
-    func login(username: String, password: String) -> LoginStatus {
+    func login(loginVC: LoginViewController, username: String, password: String) {
         let reachable = connection()
         
         if reachable {
              
-            guard let url = URL(string: "https://iosquiz.herokuapp.com/api/session") else { return LoginStatus.error(400, "Server error") }
+            guard let url = URL(string: "https://iosquiz.herokuapp.com/api/session") else { return }
             let bodyData = "username=\(username)&password=\(password)"
             
             var request = URLRequest(url: url)
@@ -97,32 +96,27 @@ class NetworkService: NetworkServiceProtocol {
                 switch result {
                 case .failure(_):
                     self.loginStatus = LoginStatus.error(400, "Server error")
+                    loginVC.loginAPIResult(result: false)
                 case .success(let value):
                     self.loginStatus = LoginStatus.success
                     self.defaults.set(value.token, forKey: "Token")
                     self.defaults.set(value.user_id, forKey: "UserID")
+                    loginVC.loginAPIResult(result: true)
                 case .serverAnswer(let code):
                     print("Status code: \(code)")
+                    loginVC.loginAPIResult(result: false)
                     
                 }
             }
-        } else {
-            self.loginStatus = LoginStatus.noInternetConnection
-            
         }
-            
-        guard let loginStatus = loginStatus else { return LoginStatus.error(400, "Server error") }
-            
-        return loginStatus
 
-        
     }
     
-    func fetchQuizes() -> [Quiz]? {
+    func fetchQuizes(repo: QuizRepository) {
         let reachable = connection()
         
         if reachable {
-            guard let url = URL(string: "https://iosquiz.herokuapp.com/api/quizzes") else { return [] }
+            guard let url = URL(string: "https://iosquiz.herokuapp.com/api/quizzes") else { return }
             
             var request = URLRequest(url: url)
             request.httpMethod = "GET"
@@ -131,19 +125,16 @@ class NetworkService: NetworkServiceProtocol {
                 switch result {
                 case .failure(let error):
                     print("Error: \(error)")
+                    repo.HandleAPIResponse(quizzes: [])
                 case .success(let value):
-                    self.quizzes = value.quizzes.sorted{ $0.category.rawValue < $1.category.rawValue }.sorted{ $0.title < $1.title }
+                    let quizList = value.quizzes.sorted{ $0.category.rawValue < $1.category.rawValue }.sorted{ $0.title < $1.title }
+                    repo.HandleAPIResponse(quizzes: quizList)
                 case .serverAnswer(let code):
                     print("Status code: \(code)")
+                    repo.HandleAPIResponse(quizzes: [])
                     
                 }
             }
-
-            return quizzes
-            
-        } else {
-            return []
-            
         }
     }
     

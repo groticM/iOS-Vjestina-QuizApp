@@ -26,7 +26,7 @@ class LoginViewController: UIViewController {
     private let defaultButtonAlpha: CGFloat = 0.5
     private let radius: CGFloat = 25
     
-    private let networkService = NetworkService()
+    private let networkService = QuizNetworkDataSource()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -90,7 +90,7 @@ class LoginViewController: UIViewController {
         loginButton.layer.cornerRadius = radius
         loginButton.backgroundColor = .white
         loginButton.alpha = defaultButtonAlpha
-        loginButton.addTarget(self, action: #selector(login), for: .touchUpInside)
+        loginButton.addTarget(self, action: #selector(attemptLogin), for: .touchUpInside)
         
         // Error label
         hiddenErrorLabel = UILabel()
@@ -250,24 +250,28 @@ class LoginViewController: UIViewController {
     }
     
     @objc
-    private func login(){
-        UIView.animate(withDuration: 0.2,
-                       animations: { self.loginButton.backgroundColor = .darkGray },
-                       completion: { _ in self.loginButton.backgroundColor = .white })
-        
+    public func attemptLogin() {
+        loginButton.isEnabled = false
         let email = emailField.text
         let password = passwordField.text
         guard let username = email, let password = password else { return }
         
-        var success: LoginStatus?
         let backgroundQueue = DispatchQueue(label: "login", qos: .userInitiated, attributes: .concurrent)
-        backgroundQueue.sync {
-            success = networkService.login(username: username, password: password)
+        backgroundQueue.async {
+            self.networkService.login(loginVC: self, username: username, password: password)
         }
+    }
+    
+    private func login(success: Bool){
+        UIView.animate(withDuration: 0.2,
+                       animations: { self.loginButton.backgroundColor = .darkGray },
+                       completion: { _ in self.loginButton.backgroundColor = .white })
         
-        guard let success = success else {  return }
-        switch success {
-        case LoginStatus.success:
+        
+        if success {
+            let email = emailField.text
+            let password = passwordField.text
+            guard let username = email, let password = password else { return }
             print("E-mail:  \(username)")
             print("Password: \(password)")
             
@@ -284,15 +288,21 @@ class LoginViewController: UIViewController {
             tabBarController.viewControllers = [quizzesViewController, searchQuizViewController, settingsViewController]
             self.navigationController?.setViewControllers([tabBarController], animated: true)
             
-        case LoginStatus.error(_,_):
+        } else {
+            loginButton.isEnabled = true
             print("Error: Wrong password or username")
             hiddenErrorLabel.isHidden = false
             hiddenErrorLabel.text = "Error: Wrong password or username"
         
-        case LoginStatus.noInternetConnection:
-            let popUpWindow = PopUpWindowController()
-            self.navigationController?.present(popUpWindow, animated: true, completion: nil)
-            
+
+            //let popUpWindow = PopUpWindowController()
+            //self.navigationController?.present(popUpWindow, animated: true, completion: nil)
+        }
+    }
+    
+    public func loginAPIResult(result: Bool){
+        DispatchQueue.main.sync {
+            login(success: result)
         }
     }
 }

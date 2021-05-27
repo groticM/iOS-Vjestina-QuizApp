@@ -15,7 +15,7 @@ class PageViewController: UIPageViewController, QuestionAnsweredDelegate {
     private var startTime: TimeInterval
     private var endTime: TimeInterval
     
-    private var networkService = NetworkService()
+    private var networkService = QuizNetworkDataSource()
     private var controllers: [QuizViewController] = []
     private var displayedIndex = 0
     private var correctArray: [Int] = []
@@ -80,7 +80,6 @@ class PageViewController: UIPageViewController, QuestionAnsweredDelegate {
             setViewControllers([controllers[displayedIndex]], direction: .forward, animated: true, completion: nil)
     
         }
-        
         if questionNumber == quiz.questions.count - 1 {
             endTime = Date().timeIntervalSince1970
             let time = endTime - startTime

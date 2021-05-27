@@ -11,7 +11,6 @@ import PureLayout
 class QuizzesViewController: UIViewController {
     
     private var titleLabel: UILabel!
-    private var button: UIButton!
     private var funFactLabel: UILabel!
     private var infLabel: UILabel!
     private var tableView: UITableView!
@@ -28,7 +27,7 @@ class QuizzesViewController: UIViewController {
     private var category: [QuizCategory]?
     private var categoryNum: Int?
     
-    private let networkService = NetworkService()
+    private let quizRepository = QuizRepository()
     private let cellIdentifier = "cellId"
     private let headerIdentifier = "headerId"
     private let controllers: [UIViewController] = []
@@ -59,17 +58,7 @@ class QuizzesViewController: UIViewController {
         titleLabel.textColor = .white
         titleLabel.textAlignment = .center
         
-        // Get Quizes Button
-        button = UIButton()
-        scrollView.addSubview(button)
-        button.isHidden = false
-        button.backgroundColor = .white
-        button.alpha = 0.5
-        button.layer.cornerRadius = 20
-        button.setTitle("Get Quiz", for: .normal)
-        button.setTitleColor(Color().buttonTextColor, for: .normal)
-        button.titleLabel?.font = UIFont(name: "HelveticaNeue-bold", size: 20)
-        button.addTarget(self, action: #selector(getQuizes), for: .touchUpInside)
+        initiateGettingQuizzes()
 
         imageErrorView = UIImageView(image: UIImage(systemName: "xmark.circle"))
         scrollView.addSubview(imageErrorView)
@@ -140,13 +129,8 @@ class QuizzesViewController: UIViewController {
         titleLabel.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 10)
         titleLabel.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 10)
         titleLabel.autoSetDimension(.height, toSize: 30)
-
-        button.autoPinEdge(.top, to: .bottom, of: titleLabel, withOffset: 20)
-        button.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 80)
-        button.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 80)
-        button.autoSetDimension(.height, toSize: 40)
         
-        imageErrorView.autoPinEdge(.top, to: .bottom, of: button, withOffset: 100)
+        imageErrorView.autoPinEdge(.top, to: .bottom, of: titleLabel, withOffset: 100)
         imageErrorView.autoSetDimensions(to: CGSize(width: 80, height: 80))
         imageErrorView.autoAlignAxis(toSuperviewAxis: .vertical)
         
@@ -158,7 +142,7 @@ class QuizzesViewController: UIViewController {
         errorText.autoPinEdge(.bottom, to: .bottom, of: scrollView, withOffset: -10)
         errorText.autoAlignAxis(toSuperviewAxis: .vertical)
         
-        funFactView.autoPinEdge(.top, to: .bottom, of: button, withOffset: 10)
+        funFactView.autoPinEdge(.top, to: .bottom, of: titleLabel, withOffset: 10)
         funFactView.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 20)
         funFactView.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 20)
         funFactView.autoSetDimension(.height, toSize: 40)
@@ -184,21 +168,20 @@ class QuizzesViewController: UIViewController {
         tableView.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 20)
 
     }
-    
     @objc
-    private func getQuizes(){
-        let backgroundQueue = DispatchQueue(label: "load-quizzes", qos: .userInitiated, attributes: .concurrent)
-        backgroundQueue.sync {
-            quizzes = networkService.fetchQuizes()
-        }
-        
-        guard let quizzes = quizzes else { return }
+    public func initiateGettingQuizzes(){
+        quizRepository.quizzesViewController = self
+        quizRepository.getQuizzes()
+    }
+    
+    public func getQuizes(quizzes:[Quiz]){
         
         if quizzes.isEmpty {
             let popUpWindow = PopUpWindowController()
             self.navigationController?.present(popUpWindow, animated: true, completion: nil)
             
         } else {
+            self.quizzes = quizzes
             imageErrorView.isHidden = true
             errorTitle.isHidden = true
             errorText.isHidden = true
