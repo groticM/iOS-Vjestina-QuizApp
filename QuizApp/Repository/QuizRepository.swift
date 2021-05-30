@@ -12,7 +12,7 @@ class QuizRepository {
     private var localData : QuizDatabaseDataSource = QuizDatabaseDataSource()
     private var apiData : QuizNetworkDataSource = QuizNetworkDataSource()
     
-    public func getQuizzes(){
+    public func getQuizzes() {
         
         let backgroundQueue = DispatchQueue(label: "login", qos: .userInitiated, attributes: .concurrent)
         backgroundQueue.async {
@@ -22,21 +22,19 @@ class QuizRepository {
     
     public func HandleAPIResponse(quizzes: [Quiz]) {
         if(quizzes.isEmpty) {
-            // fail sa api-a, ucitaj iz baze
-            loadFromLocal()
+            DispatchQueue.main.sync {
+                self.quizzesViewController?.getQuizes(quizzes: localData.loadFromDatabase())
+            }
+            
             return
+            
         }
+        
         localData.saveToDatabase(quizzes: quizzes)
+        localData.loadFromDatabase()
+        
         DispatchQueue.main.sync {
             self.quizzesViewController?.getQuizes(quizzes: quizzes)
         }
-    }
-    
-    public func loadFromLocal(){
-        
-    }
-    
-    init () {
-    
     }
 }

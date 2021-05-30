@@ -179,7 +179,7 @@ class LoginViewController: UIViewController {
         
     }
     
-    private func designTextField(viewField: UIView,textField: UITextField, text: String, radius: CGFloat){
+    private func designTextField(viewField: UIView, textField: UITextField, text: String, radius: CGFloat){
         viewField.backgroundColor = Color().colorTextField
         viewField.layer.cornerRadius = radius
         viewField.clipsToBounds = true
@@ -255,11 +255,9 @@ class LoginViewController: UIViewController {
         let email = emailField.text
         let password = passwordField.text
         guard let username = email, let password = password else { return }
-        
-        let backgroundQueue = DispatchQueue(label: "login", qos: .userInitiated, attributes: .concurrent)
-        backgroundQueue.async {
-            self.networkService.login(loginVC: self, username: username, password: password)
-        }
+
+        self.networkService.login(loginVC: self, username: username, password: password)
+
     }
     
     private func login(success: Bool){
@@ -271,6 +269,7 @@ class LoginViewController: UIViewController {
         if success {
             let email = emailField.text
             let password = passwordField.text
+    
             guard let username = email, let password = password else { return }
             print("E-mail:  \(username)")
             print("Password: \(password)")
@@ -278,11 +277,11 @@ class LoginViewController: UIViewController {
             let quizzesViewController = QuizzesViewController()
             quizzesViewController.tabBarItem = UITabBarItem(title: "Quiz", image:  UIImage(systemName: "stopwatch"), selectedImage: UIImage(systemName:"stopwatch.fill"))
             
-            let settingsViewController = SettingsViewController()
-            settingsViewController.tabBarItem = UITabBarItem(title: "Settings", image:  UIImage(systemName: "gearshape"), selectedImage: UIImage(systemName:"gearshape.fill"))
-            
             let searchQuizViewController = SearchQuizViewController()
             searchQuizViewController.tabBarItem = UITabBarItem(title: "Search", image:  UIImage(systemName: "magnifyingglass"), selectedImage: UIImage(systemName:"magnifyingglass.circle.fill"))
+            
+            let settingsViewController = SettingsViewController()
+            settingsViewController.tabBarItem = UITabBarItem(title: "Settings", image:  UIImage(systemName: "gearshape"), selectedImage: UIImage(systemName:"gearshape.fill"))
             
             let tabBarController = UITabBarController()
             tabBarController.viewControllers = [quizzesViewController, searchQuizViewController, settingsViewController]
@@ -294,7 +293,6 @@ class LoginViewController: UIViewController {
             hiddenErrorLabel.isHidden = false
             hiddenErrorLabel.text = "Error: Wrong password or username"
         
-
             //let popUpWindow = PopUpWindowController()
             //self.navigationController?.present(popUpWindow, animated: true, completion: nil)
         }

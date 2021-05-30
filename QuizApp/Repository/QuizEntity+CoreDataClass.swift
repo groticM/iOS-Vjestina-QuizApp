@@ -2,7 +2,7 @@
 //  QuizEntity+CoreDataClass.swift
 //  QuizApp
 //
-//  Created by Marta Grotic on 27.05.2021..
+//  Created by Marta Grotic on 30.05.2021..
 //
 //
 

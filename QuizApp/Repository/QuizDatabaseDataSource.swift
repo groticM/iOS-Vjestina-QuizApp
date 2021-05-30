@@ -12,11 +12,9 @@ class QuizDatabaseDataSource {
     public var repo: QuizRepository?
     public var core: CoreDataStack = CoreDataStack(modelName: "QuizModel")
     
-    init() {
-        
-    }
     public func saveToDatabase(quizzes: [Quiz]) {
         clearDatabase()
+        
         for quiz in quizzes {
             let q = QuizEntity(context: core.managedContext)
             q.id = UUID(uuidString: String(quiz.id))
@@ -25,21 +23,27 @@ class QuizDatabaseDataSource {
             q.category = quiz.category.rawValue
             q.level = Int32(quiz.level)
             q.image = quiz.imageUrl
+            
             for question in quiz.questions {
                 let qu = QuestionEntity(context: core.managedContext)
                 qu.id = UUID(uuidString: String(question.id))
                 qu.answers = question.answers
+                qu.question = question.question
                 qu.correctAnswer = Int32(question.correctAnswer)
+                q.addToQuestions(qu)
             }
         }
         core.saveContext()
+        
     }
 
     func clearDatabase() {
         let entities = core.storeContainer.managedObjectModel.entities
+        
         for entity in entities {
             delete(entityName: entity.name!)
         }
+        
     }
 
     func delete(entityName: String) {
@@ -53,6 +57,40 @@ class QuizDatabaseDataSource {
     }
     
     public func loadFromDatabase() -> [Quiz] {
+        var quizzes = [Quiz]()
+        let request = NSFetchRequest<QuizEntity>(entityName: "QuizEntity")
+        request.returnsObjectsAsFaults = false
+        
+        do {
+            let results = try core.managedContext.fetch(request)
+            
+            var numOfQuiz = 0
+            for entity in results {
+                var quiz: Quiz! = Quiz()
+                quiz?.description = entity.desc ?? ""
+                quiz.imageUrl = entity.image ?? ""
+                quiz.level = Int(entity.level)
+                quiz.id = numOfQuiz
+                numOfQuiz += 1
+                
+                var numOfQuestion = 0
+                for questionEntiy in entity.questions?.allObjects ?? [] {
+                    var question : Question! = Question()
+                    question.question = (questionEntiy as! QuestionEntity).question!
+                    question.answers = (questionEntiy as! QuestionEntity).answers!
+                    question.correctAnswer = Int((questionEntiy as! QuestionEntity).correctAnswer)
+                    quiz.questions.append(question)
+                    question.id = numOfQuestion
+                    numOfQuestion += 1
+                    // print(question)
+                }
+                quizzes.append(quiz)
+            }
+            return quizzes
+            
+        } catch {
+            print("Fetching data Failed")
+        }
         return []
     }
 }

@@ -2,7 +2,7 @@
 //  QuizEntity+CoreDataProperties.swift
 //  QuizApp
 //
-//  Created by Marta Grotic on 27.05.2021..
+//  Created by Marta Grotic on 30.05.2021..
 //
 //
 
@@ -22,24 +22,24 @@ extension QuizEntity {
     @NSManaged public var image: String?
     @NSManaged public var level: Int32
     @NSManaged public var title: String?
-    @NSManaged public var question: NSSet?
+    @NSManaged public var questions: NSSet?
 
 }
 
-// MARK: Generated accessors for question
+// MARK: Generated accessors for questions
 extension QuizEntity {
 
-    @objc(addQuestionObject:)
-    @NSManaged public func addToQuestion(_ value: QuestionEntity)
+    @objc(addQuestionsObject:)
+    @NSManaged public func addToQuestions(_ value: QuestionEntity)
 
-    @objc(removeQuestionObject:)
-    @NSManaged public func removeFromQuestion(_ value: QuestionEntity)
+    @objc(removeQuestionsObject:)
+    @NSManaged public func removeFromQuestions(_ value: QuestionEntity)
 
-    @objc(addQuestion:)
-    @NSManaged public func addToQuestion(_ values: NSSet)
+    @objc(addQuestions:)
+    @NSManaged public func addToQuestions(_ values: NSSet)
 
-    @objc(removeQuestion:)
-    @NSManaged public func removeFromQuestion(_ values: NSSet)
+    @objc(removeQuestions:)
+    @NSManaged public func removeFromQuestions(_ values: NSSet)
 
 }
 

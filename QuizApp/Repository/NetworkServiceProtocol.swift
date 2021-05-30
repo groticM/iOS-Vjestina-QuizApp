@@ -6,9 +6,9 @@ protocol NetworkServiceProtocol {
     
     func executeUrlRequestPostResult<T: Decodable>(_ request: URLRequest, completionHandler: @escaping(Result<T, RequestError>) -> Void)
     
-    func login(username: String, password: String) -> LoginStatus
+    func login(username: String, password: String)
 
-    func fetchQuizes() -> [Quiz]?
+    func fetchQuizes()
     
     func postResult(quizId: Int, time: Double, finalCorrectAnswers: Int) -> Bool
 

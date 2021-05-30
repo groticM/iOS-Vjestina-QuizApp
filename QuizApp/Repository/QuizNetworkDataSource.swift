@@ -10,8 +10,6 @@ import Reachability
 
 class QuizNetworkDataSource {
     
-    private var loginStatus: LoginStatus?
-    
     var reach: Reachability?
     var connectionStatus: Bool?
     
@@ -95,10 +93,8 @@ class QuizNetworkDataSource {
             self.executeUrlRequest(request) { (result: Result<Login, RequestError>) in
                 switch result {
                 case .failure(_):
-                    self.loginStatus = LoginStatus.error(400, "Server error")
                     loginVC.loginAPIResult(result: false)
                 case .success(let value):
-                    self.loginStatus = LoginStatus.success
                     self.defaults.set(value.token, forKey: "Token")
                     self.defaults.set(value.user_id, forKey: "UserID")
                     loginVC.loginAPIResult(result: true)

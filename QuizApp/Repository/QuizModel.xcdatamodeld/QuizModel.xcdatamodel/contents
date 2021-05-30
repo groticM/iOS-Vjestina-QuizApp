@@ -4,7 +4,8 @@
         <attribute name="answers" optional="YES" attributeType="Transformable" customClassName="[String]"/>
         <attribute name="correctAnswer" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <relationship name="quiz" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="QuizEntity" inverseName="question" inverseEntity="QuizEntity"/>
+        <attribute name="question" optional="YES" attributeType="String"/>
+        <relationship name="quiz" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="QuizEntity" inverseName="questions" inverseEntity="QuizEntity"/>
     </entity>
     <entity name="QuizEntity" representedClassName="QuizEntity" syncable="YES">
         <attribute name="category" optional="YES" attributeType="String"/>
@@ -13,10 +14,10 @@
         <attribute name="image" optional="YES" attributeType="String"/>
         <attribute name="level" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="title" optional="YES" attributeType="String"/>
-        <relationship name="question" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="QuestionEntity" inverseName="quiz" inverseEntity="QuestionEntity"/>
+        <relationship name="questions" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="QuestionEntity" inverseName="quiz" inverseEntity="QuestionEntity"/>
     </entity>
     <elements>
-        <element name="QuestionEntity" positionX="-34.839111328125" positionY="23.7882080078125" width="128" height="103"/>
+        <element name="QuestionEntity" positionX="-34.839111328125" positionY="23.7882080078125" width="128" height="118"/>
         <element name="QuizEntity" positionX="-483.2197265625" positionY="-71.75241088867188" width="128" height="148"/>
     </elements>
 </model>

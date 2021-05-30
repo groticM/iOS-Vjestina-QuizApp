@@ -80,6 +80,7 @@ class PageViewController: UIPageViewController, QuestionAnsweredDelegate {
             setViewControllers([controllers[displayedIndex]], direction: .forward, animated: true, completion: nil)
     
         }
+        
         if questionNumber == quiz.questions.count - 1 {
             endTime = Date().timeIntervalSince1970
             let time = endTime - startTime
