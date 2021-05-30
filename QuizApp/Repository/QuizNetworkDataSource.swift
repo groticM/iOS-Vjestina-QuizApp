@@ -51,26 +51,13 @@ class QuizNetworkDataSource {
                 return
             }
             
-            guard let httpResponse = response as? HTTPURLResponse else { return }
-            
-            var statusCode: ServerAnswers?
-            switch httpResponse.statusCode {
-            case 200:
-                statusCode = ServerAnswers.ok
-            case 400:
-                statusCode = ServerAnswers.badRequest
-            case 401:
-                statusCode = ServerAnswers.unauthorized
-            case 403:
-                statusCode = ServerAnswers.forbidden
-            case 404:
-                statusCode = ServerAnswers.notFound
-            default:
-                statusCode = ServerAnswers.error
+            guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+                completionHandler(.failure(.serverError))
+                return
             }
+            let status = httpResponse.statusCode
+            completionHandler(.success(status as! T))
             
-            guard let status = statusCode else { return }
-            completionHandler(.serverAnswer(status))
         }
         
         dataTask.resume()
@@ -96,9 +83,6 @@ class QuizNetworkDataSource {
                     self.defaults.set(value.token, forKey: "Token")
                     self.defaults.set(value.user_id, forKey: "UserID")
                     loginVC.loginAPIResult(result: true)
-                case .serverAnswer(let code):
-                    print("Status code: \(code)")
-                    loginVC.loginAPIResult(result: false)
                     
                 }
             }
@@ -123,9 +107,6 @@ class QuizNetworkDataSource {
                 case .success(let value):
                     let quizList = value.quizzes.sorted{ $0.category.rawValue < $1.category.rawValue }.sorted{ $0.title < $1.title }
                     repo.HandleAPIResponse(quizzes: quizList)
-                case .serverAnswer(let code):
-                    print("Status code: \(code)")
-                    repo.HandleAPIResponse(quizzes: [])
                     
                 }
             }
@@ -162,11 +143,9 @@ class QuizNetworkDataSource {
                     print("Error: \(error)")
                 case .success(let value):
                     print(value)
-                case .serverAnswer(let code):
-                    print("Status code: \(code.rawValue)")
                 }
+
             }
-            
             return true
             
         } else {

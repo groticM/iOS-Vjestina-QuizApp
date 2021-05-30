@@ -10,14 +10,14 @@ import CoreData
 class CoreDataStack {
 
     private let modelName: String
+    
+    init(modelName: String) {
+        self.modelName = modelName
+    }
 
     lazy var managedContext: NSManagedObjectContext = {
         return self.storeContainer.viewContext
     }()
-
-    init(modelName: String) {
-        self.modelName = modelName
-    }
 
     public lazy var storeContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: modelName)

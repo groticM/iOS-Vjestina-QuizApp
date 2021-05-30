@@ -59,6 +59,7 @@ class SearchQuizViewController: UIViewController {
         searchButton.setTitle("Search", for: .normal)
         searchButton.setTitleColor(Color().buttonTextColor, for: .normal)
         searchButton.titleLabel?.font = UIFont(name: "HelveticaNeue-bold", size: 15)
+        searchButton.addTarget(self, action: #selector(search), for: .touchUpInside)
         
         // TableView
         tableView = UITableView()
@@ -103,6 +104,11 @@ class SearchQuizViewController: UIViewController {
         tableView.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 10)
         tableView.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 10)
         tableView.autoPinEdge(.bottom, to: .bottom, of: view, withOffset: -20)
+        
+    }
+    
+    @objc
+    private func search() {
         
     }
     
