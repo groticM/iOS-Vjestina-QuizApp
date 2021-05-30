@@ -87,21 +87,34 @@ class PageViewController: UIPageViewController, QuestionAnsweredDelegate {
 
             let finalCorrectAnswersCount = correctArray.filter{ $0 == 1 }.count
             
-            let success = networkService.postResult(quizId: quiz.id, time: Double(time), finalCorrectAnswers: finalCorrectAnswersCount)
+            networkService.postResult(pageViewController: self, quizId: quiz.id, time: Double(time), finalCorrectAnswers: finalCorrectAnswersCount)
             
-            if success {
-                let quizResultViewController = QuizResultViewController(questionNumber: quiz.questions.count, correctNumber: finalCorrectAnswersCount)
-                navigationController?.setViewControllers([quizResultViewController], animated: true)
-            } else {
-                print("No Internet connection!")
-                
-                let popUpWindow = PopUpWindowController()
-                self.navigationController?.present(popUpWindow, animated: true, completion: nil)
-                
-                let quizResultViewController = QuizResultViewController(questionNumber: quiz.questions.count, correctNumber: finalCorrectAnswersCount)
-                navigationController?.setViewControllers([quizResultViewController], animated: true)
-                
-            }
+        }
+    }
+    public func endQuiz(result: Bool){
+        let finalCorrectAnswersCount = correctArray.filter{ $0 == 1 }.count
+        
+        if result {
+            let quizResultViewController = QuizResultViewController(questionNumber: quiz.questions.count, correctNumber: finalCorrectAnswersCount)
+            navigationController?.setViewControllers([quizResultViewController], animated: true)
+            
+        } else {
+            print("No Internet connection!")
+            let finalCorrectAnswersCount = correctArray.filter{ $0 == 1 }.count
+            
+            let popUpWindow = PopUpWindowController()
+            self.navigationController?.present(popUpWindow, animated: true, completion: nil)
+            
+            let quizResultViewController = QuizResultViewController(questionNumber: quiz.questions.count, correctNumber: finalCorrectAnswersCount)
+            navigationController?.setViewControllers([quizResultViewController], animated: true)
+            
+        }
+
+    }
+    
+    public func apiResult(result: Bool){
+        DispatchQueue.main.sync {
+            endQuiz(result: result)
         }
     }
 }

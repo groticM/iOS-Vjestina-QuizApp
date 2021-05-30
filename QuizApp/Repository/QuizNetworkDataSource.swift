@@ -10,7 +10,6 @@ import Reachability
 
 class QuizNetworkDataSource: NetworkServiceProtocol {
     public let reach = Reachability.forInternetConnection()
-    
     public let defaults = UserDefaults.standard
     
     private func executeUrlRequest<T: Decodable>(_ request: URLRequest, completionHandler: @escaping(Result<T, RequestError>) -> Void) {
@@ -64,11 +63,10 @@ class QuizNetworkDataSource: NetworkServiceProtocol {
         dataTask.resume()
     }
     
-    func login(loginVC: LoginViewController, username: String, password: String) {
+    func login(loginViewController: LoginViewController, username: String, password: String) {
         guard let reachable = reach?.isReachable() else { return }
         
         if reachable {
-             
             guard let url = URL(string: "https://iosquiz.herokuapp.com/api/session") else { return }
             let bodyData = "username=\(username)&password=\(password)"
             
@@ -79,16 +77,15 @@ class QuizNetworkDataSource: NetworkServiceProtocol {
             self.executeUrlRequest(request) { (result: Result<Login, RequestError>) in
                 switch result {
                 case .failure(_):
-                    loginVC.loginAPIResult(result: false)
+                    loginViewController.loginAPIResult(result: false)
                 case .success(let value):
                     self.defaults.set(value.token, forKey: "Token")
                     self.defaults.set(value.user_id, forKey: "UserID")
-                    loginVC.loginAPIResult(result: true)
+                    loginViewController.loginAPIResult(result: true)
                     
                 }
             }
         }
-
     }
     
     func fetchQuizes(repository: QuizRepository) {
@@ -114,14 +111,14 @@ class QuizNetworkDataSource: NetworkServiceProtocol {
         }
     }
     
-    func postResult(quizId: Int, time: Double, finalCorrectAnswers: Int) -> Bool {
-        guard let reachable = reach?.isReachable() else { return false }
+    func postResult(pageViewController: PageViewController, quizId: Int, time: Double, finalCorrectAnswers: Int) {
+        guard let reachable = reach?.isReachable() else { return  }
         
         if reachable {
-            guard let url = URL(string: "https://iosquiz.herokuapp.com/api/result") else { return false }
+            guard let url = URL(string: "https://iosquiz.herokuapp.com/api/result") else { return }
 
-            guard let token = defaults.object(forKey: "Token") else { return false }
-            guard let userId = defaults.object(forKey: "UserID") else { return false }
+            guard let token = defaults.object(forKey: "Token") else { return }
+            guard let userId = defaults.object(forKey: "UserID") else { return }
         
             let parameters: [String: Any] = [
                 "quiz_id": quizId,
@@ -135,23 +132,19 @@ class QuizNetworkDataSource: NetworkServiceProtocol {
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             request.setValue("\(token)", forHTTPHeaderField: "Authorization")
         
-            guard let httpBody = try? JSONSerialization.data(withJSONObject: parameters, options: []) else { return false }
+            guard let httpBody = try? JSONSerialization.data(withJSONObject: parameters, options: []) else { return }
             request.httpBody = httpBody
         
             self.executeUrlRequestPostResult(request) { (result: Result<Int, RequestError>) in
                 switch result {
                 case .failure(let error):
-                    print("Error: \(error)")
+                    pageViewController.apiResult(result: false)
                 case .success(let value):
                     print(value)
+                    pageViewController.apiResult(result: true)
                 }
 
-            }
-            return true
-            
-        } else {
-            return false
-            
+            }            
         }
     }
 }

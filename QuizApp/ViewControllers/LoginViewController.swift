@@ -256,7 +256,7 @@ class LoginViewController: UIViewController {
         let password = passwordField.text
         guard let username = email, let password = password else { return }
 
-        networkService.login(loginVC: self, username: username, password: password)
+        networkService.login(loginViewController: self, username: username, password: password)
         
         guard let reachable = networkService.reach?.isReachable() else { return }
         if !reachable {
