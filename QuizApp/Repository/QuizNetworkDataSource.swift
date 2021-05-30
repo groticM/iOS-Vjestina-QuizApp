@@ -9,13 +9,11 @@ import UIKit
 import Reachability
 
 class QuizNetworkDataSource {
-    
-    var reach: Reachability?
-    var connectionStatus: Bool?
+    let reach = Reachability.forInternetConnection()
     
     public let defaults = UserDefaults.standard
     
-    func executeUrlRequest<T: Decodable>(_ request: URLRequest, completionHandler: @escaping(Result<T, RequestError>) -> Void) {
+    private func executeUrlRequest<T: Decodable>(_ request: URLRequest, completionHandler: @escaping(Result<T, RequestError>) -> Void) {
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
             
             guard error == nil else {
@@ -45,7 +43,7 @@ class QuizNetworkDataSource {
         dataTask.resume()
     }
     
-    func executeUrlRequestPostResult<T: Decodable>(_ request: URLRequest, completionHandler: @escaping(Result<T, RequestError>) -> Void) {
+    private func executeUrlRequestPostResult<T: Decodable>(_ request: URLRequest, completionHandler: @escaping(Result<T, RequestError>) -> Void) {
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
             
             guard error == nil else {
@@ -79,7 +77,7 @@ class QuizNetworkDataSource {
     }
     
     func login(loginVC: LoginViewController, username: String, password: String) {
-        let reachable = connection()
+        guard let reachable = reach?.isReachable() else { return }
         
         if reachable {
              
@@ -109,7 +107,7 @@ class QuizNetworkDataSource {
     }
     
     func fetchQuizes(repo: QuizRepository) {
-        let reachable = connection()
+        guard let reachable = reach?.isReachable() else { return }
         
         if reachable {
             guard let url = URL(string: "https://iosquiz.herokuapp.com/api/quizzes") else { return }
@@ -135,7 +133,7 @@ class QuizNetworkDataSource {
     }
     
     func postResult(quizId: Int, time: Double, finalCorrectAnswers: Int) -> Bool {
-        let reachable = connection()
+        guard let reachable = reach?.isReachable() else { return false }
         
         if reachable {
             guard let url = URL(string: "https://iosquiz.herokuapp.com/api/result") else { return false }
@@ -175,12 +173,5 @@ class QuizNetworkDataSource {
             return false
             
         }
-    }
-    
-    func connection() -> Bool {
-        self.reach = Reachability.forInternetConnection()
-        guard let reachable = reach?.isReachable() else { return false }
-        return reachable
-        
     }
 }

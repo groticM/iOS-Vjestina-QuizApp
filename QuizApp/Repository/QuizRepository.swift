@@ -8,16 +8,13 @@
 import Foundation
 
 class QuizRepository {
-    public var quizzesViewController : QuizzesViewController?
-    private var localData : QuizDatabaseDataSource = QuizDatabaseDataSource()
-    private var apiData : QuizNetworkDataSource = QuizNetworkDataSource()
+    public var quizzesViewController: QuizzesViewController?
+    private var localData: QuizDatabaseDataSource = QuizDatabaseDataSource()
+    private var apiData: QuizNetworkDataSource = QuizNetworkDataSource()
     
     public func getQuizzes() {
+        apiData.fetchQuizes(repo: self)
         
-        let backgroundQueue = DispatchQueue(label: "login", qos: .userInitiated, attributes: .concurrent)
-        backgroundQueue.async {
-            self.apiData.fetchQuizes(repo: self)
-        }
     }
     
     public func HandleAPIResponse(quizzes: [Quiz]) {

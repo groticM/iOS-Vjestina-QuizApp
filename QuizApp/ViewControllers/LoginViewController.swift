@@ -256,7 +256,7 @@ class LoginViewController: UIViewController {
         let password = passwordField.text
         guard let username = email, let password = password else { return }
 
-        self.networkService.login(loginVC: self, username: username, password: password)
+        networkService.login(loginVC: self, username: username, password: password)
 
     }
     
