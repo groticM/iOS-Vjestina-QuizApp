@@ -172,9 +172,12 @@ class QuizzesViewController: UIViewController {
     public func initiateGettingQuizzes(){
         quizRepository.quizzesViewController = self
         quizRepository.getQuizzes()
+        
     }
     
     public func getQuizes(quizzes:[Quiz]){
+        
+        let quizzes = quizzes.sorted{ $0.category.rawValue < $1.category.rawValue }.sorted{ $0.title < $1.title }
         
         if quizzes.isEmpty {
             let popUpWindow = PopUpWindowController()

@@ -257,6 +257,14 @@ class LoginViewController: UIViewController {
         guard let username = email, let password = password else { return }
 
         networkService.login(loginVC: self, username: username, password: password)
+        
+        guard let reachable = networkService.reach?.isReachable() else { return }
+        if !reachable {
+            loginButton.isEnabled = true
+            let popUpWindow = PopUpWindowController()
+            self.navigationController?.present(popUpWindow, animated: true, completion: nil)
+            
+        }
 
     }
     
@@ -264,7 +272,6 @@ class LoginViewController: UIViewController {
         UIView.animate(withDuration: 0.2,
                        animations: { self.loginButton.backgroundColor = .darkGray },
                        completion: { _ in self.loginButton.backgroundColor = .white })
-        
         
         if success {
             let email = emailField.text
@@ -293,8 +300,6 @@ class LoginViewController: UIViewController {
             hiddenErrorLabel.isHidden = false
             hiddenErrorLabel.text = "Error: Wrong password or username"
         
-            //let popUpWindow = PopUpWindowController()
-            //self.navigationController?.present(popUpWindow, animated: true, completion: nil)
         }
     }
     

@@ -42,6 +42,7 @@ class QuizDatabaseDataSource {
         
         for entity in entities {
             delete(entityName: entity.name!)
+            
         }
         
     }
@@ -49,6 +50,7 @@ class QuizDatabaseDataSource {
     func delete(entityName: String) {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        
         do {
             try core.storeContainer.viewContext.execute(deleteRequest)
         } catch let error as NSError {
@@ -58,8 +60,7 @@ class QuizDatabaseDataSource {
     
     public func loadFromDatabase() -> [Quiz] {
         var quizzes = [Quiz]()
-        let request = NSFetchRequest<QuizEntity>(entityName: "QuizEntity")
-        request.returnsObjectsAsFaults = false
+        let request: NSFetchRequest<QuizEntity> = QuizEntity.fetchRequest()
         
         do {
             let results = try core.managedContext.fetch(request)
@@ -67,10 +68,13 @@ class QuizDatabaseDataSource {
             var numOfQuiz = 0
             for entity in results {
                 var quiz: Quiz! = Quiz()
-                quiz?.description = entity.desc ?? ""
-                quiz.imageUrl = entity.image ?? ""
+                quiz?.title = entity.title ?? ""
+                quiz.description = entity.desc ?? ""
+                quiz.category = QuizCategory(rawValue: entity.category ?? "" ) ?? QuizCategory.none
                 quiz.level = Int(entity.level)
+                quiz.imageUrl = entity.image ?? ""
                 quiz.id = numOfQuiz
+                
                 numOfQuiz += 1
                 
                 var numOfQuestion = 0
@@ -82,8 +86,8 @@ class QuizDatabaseDataSource {
                     quiz.questions.append(question)
                     question.id = numOfQuestion
                     numOfQuestion += 1
-                    // print(question)
                 }
+                
                 quizzes.append(quiz)
             }
             return quizzes
@@ -92,5 +96,47 @@ class QuizDatabaseDataSource {
             print("Fetching data Failed")
         }
         return []
+    }
+    
+    public func filterLoadFromDatabase(filter: String) -> [Quiz] {
+        var quizzes = [Quiz]()
+        let request: NSFetchRequest<QuizEntity> = QuizEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "%K CONTAINS[cd] %@", #keyPath(QuizEntity.title), filter)
+        
+        do {
+            let results =  try core.managedContext.fetch(request)
+            
+            var numOfQuiz = 0
+            for entity in results {
+                var quiz: Quiz! = Quiz()
+                quiz?.title = entity.title ?? ""
+                quiz.description = entity.desc ?? ""
+                quiz.category = QuizCategory(rawValue: entity.category ?? "" ) ?? QuizCategory.none
+                quiz.level = Int(entity.level)
+                quiz.imageUrl = entity.image ?? ""
+                quiz.id = numOfQuiz
+                
+                numOfQuiz += 1
+                
+                var numOfQuestion = 0
+                for questionEntiy in entity.questions?.allObjects ?? [] {
+                    var question : Question! = Question()
+                    question.question = (questionEntiy as! QuestionEntity).question!
+                    question.answers = (questionEntiy as! QuestionEntity).answers!
+                    question.correctAnswer = Int((questionEntiy as! QuestionEntity).correctAnswer)
+                    quiz.questions.append(question)
+                    question.id = numOfQuestion
+                    numOfQuestion += 1
+                }
+                
+                quizzes.append(quiz)
+            }
+            
+            return quizzes
+            
+        } catch {
+            print("Error when fetching restaurants from core data: \(error)")
+            return []
+        }
     }
 }

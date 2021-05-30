@@ -2,9 +2,9 @@ import UIKit
 
 protocol NetworkServiceProtocol {
     
-    func login(username: String, password: String)
+    func login(loginVC: LoginViewController, username: String, password: String)
 
-    func fetchQuizes()
+    func fetchQuizes(repository: QuizRepository)
     
     func postResult(quizId: Int, time: Double, finalCorrectAnswers: Int) -> Bool
 

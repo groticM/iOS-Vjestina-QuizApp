@@ -16,8 +16,13 @@ class SearchQuizViewController: UIViewController {
     private var tableView: UITableView!
     private var searchTextFieldView: UIView!
     
+    private var quizzes: [Quiz]?
+    private var category: [QuizCategory]?
+    private var categoryNum: Int?
+    
     private let cellIdentifier = "cellId"
     private let headerIdentifier = "headerId"
+    private let quizRepository = QuizRepository()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -109,6 +114,16 @@ class SearchQuizViewController: UIViewController {
     
     @objc
     private func search() {
+        guard let filterText = searchTextField.text else { return }
+        quizzes = quizRepository.getFilteredQuizzes(text: filterText)
+        
+        guard let quizzes = quizzes else { return }
+        category = Array(Set(quizzes.compactMap{ $0.category })).sorted{ $0.rawValue < $1.rawValue }
+
+        guard let category = category else { return }
+        categoryNum = category.count
+
+        tableView.reloadData()
         
     }
     
@@ -116,11 +131,23 @@ class SearchQuizViewController: UIViewController {
     
 extension SearchQuizViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        if categoryNum != nil {
+            return categoryNum!
+        } else {
+            return 0
+        }
+        
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        var count: Int!
+        guard let quizzes = quizzes else { return 0 }
+        let quizCategory = quizzes.compactMap{ $0.category }
+        
+        count = quizCategory.filter{ $0.rawValue == category![section].rawValue}.count
+
+        return count
+        
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -133,6 +160,12 @@ extension SearchQuizViewController: UITableViewDataSource {
         
         let num = indexPath.section + indexPath.row
         
+        if quizzes != nil {
+            cell.levelView = makeLevelView(level: quizzes![num].level, levelView: cell.levelView)
+            cell.titleLabel.text = quizzes![num].title
+            cell.quizDescription.text = quizzes![num].description
+        }
+
         return cell
     }
     
@@ -184,5 +217,29 @@ extension SearchQuizViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 40.0
         
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.size.width, height: 20))
+        headerView.backgroundColor = Color().colorBackground
+        
+        let sectionTitle = UILabel(frame: CGRect(x: 10, y: 10, width: tableView.bounds.size.width, height: 20))
+        sectionTitle.textColor = .white
+        sectionTitle.font = UIFont(name: "HelveticaNeue-Bold", size: 25)
+        
+        if category != nil {
+            sectionTitle.text = category![section].rawValue
+        }
+
+        headerView.addSubview(sectionTitle)
+
+        return headerView
+        
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let pageViewController = PageViewController(quiz: quizzes![indexPath.section + indexPath.row])
+        self.navigationController?.pushViewController(pageViewController, animated: true)
+
     }
 }

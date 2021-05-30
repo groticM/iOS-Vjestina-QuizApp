@@ -10,28 +10,35 @@ import Foundation
 class QuizRepository {
     public var quizzesViewController: QuizzesViewController?
     private var localData: QuizDatabaseDataSource = QuizDatabaseDataSource()
-    private var apiData: QuizNetworkDataSource = QuizNetworkDataSource()
+    private var networkService: QuizNetworkDataSource = QuizNetworkDataSource()
     
     public func getQuizzes() {
-        apiData.fetchQuizes(repo: self)
+        networkService.fetchQuizes(repository: self)
         
     }
     
-    public func HandleAPIResponse(quizzes: [Quiz]) {
-        if(quizzes.isEmpty) {
+    public func getFilteredQuizzes(text: String) -> [Quiz] {
+        let quizzes = localData.filterLoadFromDatabase(filter: text)
+        
+        return quizzes
+        
+    }
+    
+    public func handleAPIResponse(quizzes: [Quiz]) {
+        guard let reachable = networkService.reach?.isReachable() else { return }
+        if !reachable {
             DispatchQueue.main.sync {
                 self.quizzesViewController?.getQuizes(quizzes: localData.loadFromDatabase())
             }
-            
             return
-            
         }
         
         localData.saveToDatabase(quizzes: quizzes)
-        localData.loadFromDatabase()
+        let quizzesLocal = localData.loadFromDatabase()
         
         DispatchQueue.main.sync {
-            self.quizzesViewController?.getQuizes(quizzes: quizzes)
+            self.quizzesViewController?.getQuizes(quizzes: quizzesLocal)
         }
+        
     }
 }

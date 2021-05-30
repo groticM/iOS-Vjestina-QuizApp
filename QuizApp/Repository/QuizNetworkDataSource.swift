@@ -8,8 +8,8 @@
 import UIKit
 import Reachability
 
-class QuizNetworkDataSource {
-    let reach = Reachability.forInternetConnection()
+class QuizNetworkDataSource: NetworkServiceProtocol {
+    public let reach = Reachability.forInternetConnection()
     
     public let defaults = UserDefaults.standard
     
@@ -51,10 +51,11 @@ class QuizNetworkDataSource {
                 return
             }
             
-            guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+            guard let httpResponse = response as? HTTPURLResponse  else {
                 completionHandler(.failure(.serverError))
                 return
             }
+            
             let status = httpResponse.statusCode
             completionHandler(.success(status as! T))
             
@@ -90,7 +91,7 @@ class QuizNetworkDataSource {
 
     }
     
-    func fetchQuizes(repo: QuizRepository) {
+    func fetchQuizes(repository: QuizRepository) {
         guard let reachable = reach?.isReachable() else { return }
         
         if reachable {
@@ -103,10 +104,10 @@ class QuizNetworkDataSource {
                 switch result {
                 case .failure(let error):
                     print("Error: \(error)")
-                    repo.HandleAPIResponse(quizzes: [])
+                    repository.handleAPIResponse(quizzes: [])
                 case .success(let value):
                     let quizList = value.quizzes.sorted{ $0.category.rawValue < $1.category.rawValue }.sorted{ $0.title < $1.title }
-                    repo.HandleAPIResponse(quizzes: quizList)
+                    repository.handleAPIResponse(quizzes: quizList)
                     
                 }
             }
