@@ -26,7 +26,7 @@ class LoginViewController: UIViewController {
     private let defaultButtonAlpha: CGFloat = 0.5
     private let radius: CGFloat = 25
     
-    private let networkService = NetworkService()
+    private let networkService = QuizNetworkDataSource()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -90,7 +90,7 @@ class LoginViewController: UIViewController {
         loginButton.layer.cornerRadius = radius
         loginButton.backgroundColor = .white
         loginButton.alpha = defaultButtonAlpha
-        loginButton.addTarget(self, action: #selector(login), for: .touchUpInside)
+        loginButton.addTarget(self, action: #selector(attemptLogin), for: .touchUpInside)
         
         // Error label
         hiddenErrorLabel = UILabel()
@@ -179,7 +179,7 @@ class LoginViewController: UIViewController {
         
     }
     
-    private func designTextField(viewField: UIView,textField: UITextField, text: String, radius: CGFloat){
+    private func designTextField(viewField: UIView, textField: UITextField, text: String, radius: CGFloat){
         viewField.backgroundColor = Color().colorTextField
         viewField.layer.cornerRadius = radius
         viewField.clipsToBounds = true
@@ -250,45 +250,62 @@ class LoginViewController: UIViewController {
     }
     
     @objc
-    private func login(){
+    public func attemptLogin() {
+        loginButton.isEnabled = false
+        let email = emailField.text
+        let password = passwordField.text
+        guard let username = email, let password = password else { return }
+
+        networkService.login(loginViewController: self, username: username, password: password)
+        
+        guard let reachable = networkService.reach?.isReachable() else { return }
+        if !reachable {
+            loginButton.isEnabled = true
+            let popUpWindow = PopUpWindowController()
+            self.navigationController?.present(popUpWindow, animated: true, completion: nil)
+            
+        }
+
+    }
+    
+    private func login(success: Bool){
         UIView.animate(withDuration: 0.2,
                        animations: { self.loginButton.backgroundColor = .darkGray },
                        completion: { _ in self.loginButton.backgroundColor = .white })
         
-        let email = emailField.text
-        let password = passwordField.text
-        guard let username = email, let password = password else { return }
-        
-        var success: LoginStatus?
-        let backgroundQueue = DispatchQueue(label: "login", qos: .userInitiated, attributes: .concurrent)
-        backgroundQueue.sync {
-            success = networkService.login(username: username, password: password)
-        }
-        
-        guard let success = success else {  return }
-        switch success {
-        case LoginStatus.success:
+        if success {
+            let email = emailField.text
+            let password = passwordField.text
+    
+            guard let username = email, let password = password else { return }
             print("E-mail:  \(username)")
             print("Password: \(password)")
             
             let quizzesViewController = QuizzesViewController()
-            quizzesViewController.tabBarItem = UITabBarItem(title: "Quiz", image:  UIImage(systemName: "stopwatch"), selectedImage: UIImage(systemName: "stopwatch.fill"))
+            quizzesViewController.tabBarItem = UITabBarItem(title: "Quiz", image:  UIImage(systemName: "stopwatch"), selectedImage: UIImage(systemName:"stopwatch.fill"))
+            
+            let searchQuizViewController = SearchQuizViewController()
+            searchQuizViewController.tabBarItem = UITabBarItem(title: "Search", image:  UIImage(systemName: "magnifyingglass"), selectedImage: UIImage(systemName:"magnifyingglass.circle.fill"))
+            
             let settingsViewController = SettingsViewController()
-            settingsViewController.tabBarItem = UITabBarItem(title: "Settings", image:  UIImage(systemName: "gearshape"), selectedImage: UIImage(systemName: "gearshape.fill"))
+            settingsViewController.tabBarItem = UITabBarItem(title: "Settings", image:  UIImage(systemName: "gearshape"), selectedImage: UIImage(systemName:"gearshape.fill"))
             
             let tabBarController = UITabBarController()
-            tabBarController.viewControllers = [quizzesViewController, settingsViewController]
+            tabBarController.viewControllers = [quizzesViewController, searchQuizViewController, settingsViewController]
             self.navigationController?.setViewControllers([tabBarController], animated: true)
             
-        case LoginStatus.error(_,_):
+        } else {
+            loginButton.isEnabled = true
             print("Error: Wrong password or username")
             hiddenErrorLabel.isHidden = false
             hiddenErrorLabel.text = "Error: Wrong password or username"
         
-        case LoginStatus.noInternetConnection:
-            let popUpWindow = PopUpWindowController()
-            self.navigationController?.present(popUpWindow, animated: true, completion: nil)
-            
+        }
+    }
+    
+    public func loginAPIResult(result: Bool){
+        DispatchQueue.main.sync {
+            login(success: result)
         }
     }
 }

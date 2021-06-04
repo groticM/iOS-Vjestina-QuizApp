@@ -8,17 +8,11 @@
 import UIKit
 import Reachability
 
-class NetworkService: NetworkServiceProtocol {
-    
-    private var loginStatus: LoginStatus?
-    private var quizzes: [Quiz]?
-    
-    var reach: Reachability?
-    var connectionStatus: Bool?
-    
+class QuizNetworkDataSource: NetworkServiceProtocol {
+    public let reach = Reachability.forInternetConnection()
     public let defaults = UserDefaults.standard
     
-    func executeUrlRequest<T: Decodable>(_ request: URLRequest, completionHandler: @escaping(Result<T, RequestError>) -> Void) {
+    private func executeUrlRequest<T: Decodable>(_ request: URLRequest, completionHandler: @escaping(Result<T, RequestError>) -> Void) {
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
             
             guard error == nil else {
@@ -48,7 +42,7 @@ class NetworkService: NetworkServiceProtocol {
         dataTask.resume()
     }
     
-    func executeUrlRequestPostResult<T: Decodable>(_ request: URLRequest, completionHandler: @escaping(Result<T, RequestError>) -> Void) {
+    private func executeUrlRequestPostResult<T: Decodable>(_ request: URLRequest, completionHandler: @escaping(Result<T, RequestError>) -> Void) {
         let dataTask = URLSession.shared.dataTask(with: request) { data, response, error in
             
             guard error == nil else {
@@ -56,37 +50,24 @@ class NetworkService: NetworkServiceProtocol {
                 return
             }
             
-            guard let httpResponse = response as? HTTPURLResponse else { return }
-            
-            var statusCode: ServerAnswers?
-            switch httpResponse.statusCode {
-            case 200:
-                statusCode = ServerAnswers.ok
-            case 400:
-                statusCode = ServerAnswers.badRequest
-            case 401:
-                statusCode = ServerAnswers.unauthorized
-            case 403:
-                statusCode = ServerAnswers.forbidden
-            case 404:
-                statusCode = ServerAnswers.notFound
-            default:
-                statusCode = ServerAnswers.error
+            guard let httpResponse = response as? HTTPURLResponse  else {
+                completionHandler(.failure(.serverError))
+                return
             }
             
-            guard let status = statusCode else { return }
-            completionHandler(.serverAnswer(status))
+            let status = httpResponse.statusCode
+            completionHandler(.success(status as! T))
+            
         }
         
         dataTask.resume()
     }
     
-    func login(username: String, password: String) -> LoginStatus {
-        let reachable = connection()
+    func login(loginViewController: LoginViewController, username: String, password: String) {
+        guard let reachable = reach?.isReachable() else { return }
         
         if reachable {
-             
-            guard let url = URL(string: "https://iosquiz.herokuapp.com/api/session") else { return LoginStatus.error(400, "Server error") }
+            guard let url = URL(string: "https://iosquiz.herokuapp.com/api/session") else { return }
             let bodyData = "username=\(username)&password=\(password)"
             
             var request = URLRequest(url: url)
@@ -96,33 +77,22 @@ class NetworkService: NetworkServiceProtocol {
             self.executeUrlRequest(request) { (result: Result<Login, RequestError>) in
                 switch result {
                 case .failure(_):
-                    self.loginStatus = LoginStatus.error(400, "Server error")
+                    loginViewController.loginAPIResult(result: false)
                 case .success(let value):
-                    self.loginStatus = LoginStatus.success
                     self.defaults.set(value.token, forKey: "Token")
                     self.defaults.set(value.user_id, forKey: "UserID")
-                case .serverAnswer(let code):
-                    print("Status code: \(code)")
+                    loginViewController.loginAPIResult(result: true)
                     
                 }
             }
-        } else {
-            self.loginStatus = LoginStatus.noInternetConnection
-            
         }
-            
-        guard let loginStatus = loginStatus else { return LoginStatus.error(400, "Server error") }
-            
-        return loginStatus
-
-        
     }
     
-    func fetchQuizes() -> [Quiz]? {
-        let reachable = connection()
+    func fetchQuizes(repository: QuizRepository) {
+        guard let reachable = reach?.isReachable() else { return }
         
         if reachable {
-            guard let url = URL(string: "https://iosquiz.herokuapp.com/api/quizzes") else { return [] }
+            guard let url = URL(string: "https://iosquiz.herokuapp.com/api/quizzes") else { return }
             
             var request = URLRequest(url: url)
             request.httpMethod = "GET"
@@ -131,30 +101,24 @@ class NetworkService: NetworkServiceProtocol {
                 switch result {
                 case .failure(let error):
                     print("Error: \(error)")
+                    repository.handleAPIResponse(quizzes: [])
                 case .success(let value):
-                    self.quizzes = value.quizzes.sorted{ $0.category.rawValue < $1.category.rawValue }.sorted{ $0.title < $1.title }
-                case .serverAnswer(let code):
-                    print("Status code: \(code)")
+                    let quizList = value.quizzes.sorted{ $0.category.rawValue < $1.category.rawValue }.sorted{ $0.title < $1.title }
+                    repository.handleAPIResponse(quizzes: quizList)
                     
                 }
             }
-
-            return quizzes
-            
-        } else {
-            return []
-            
         }
     }
     
-    func postResult(quizId: Int, time: Double, finalCorrectAnswers: Int) -> Bool {
-        let reachable = connection()
+    func postResult(pageViewController: PageViewController, quizId: Int, time: Double, finalCorrectAnswers: Int) {
+        guard let reachable = reach?.isReachable() else { return  }
         
         if reachable {
-            guard let url = URL(string: "https://iosquiz.herokuapp.com/api/result") else { return false }
+            guard let url = URL(string: "https://iosquiz.herokuapp.com/api/result") else { return }
 
-            guard let token = defaults.object(forKey: "Token") else { return false }
-            guard let userId = defaults.object(forKey: "UserID") else { return false }
+            guard let token = defaults.object(forKey: "Token") else { return }
+            guard let userId = defaults.object(forKey: "UserID") else { return }
         
             let parameters: [String: Any] = [
                 "quiz_id": quizId,
@@ -168,32 +132,19 @@ class NetworkService: NetworkServiceProtocol {
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             request.setValue("\(token)", forHTTPHeaderField: "Authorization")
         
-            guard let httpBody = try? JSONSerialization.data(withJSONObject: parameters, options: []) else { return false }
+            guard let httpBody = try? JSONSerialization.data(withJSONObject: parameters, options: []) else { return }
             request.httpBody = httpBody
         
             self.executeUrlRequestPostResult(request) { (result: Result<Int, RequestError>) in
                 switch result {
                 case .failure(let error):
-                    print("Error: \(error)")
+                    pageViewController.apiResult(result: false)
                 case .success(let value):
                     print(value)
-                case .serverAnswer(let code):
-                    print("Status code: \(code.rawValue)")
+                    pageViewController.apiResult(result: true)
                 }
-            }
-            
-            return true
-            
-        } else {
-            return false
-            
+
+            }            
         }
-    }
-    
-    func connection() -> Bool {
-        self.reach = Reachability.forInternetConnection()
-        guard let reachable = reach?.isReachable() else { return false }
-        return reachable
-        
     }
 }

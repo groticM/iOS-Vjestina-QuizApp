@@ -1,15 +1,23 @@
 struct Question: Codable {
 
-    let id: Int
-    let question: String
-    let answers: [String]
-    let correctAnswer: Int
+    var id: Int
+    var question: String
+    var answers: [String]
+    var correctAnswer: Int
     
     enum CodingKeys: String, CodingKey {
         case id
         case question
         case answers
         case correctAnswer = "correct_answer"
+    }
+    
+    init() {
+        id = 0
+        question = ""
+        answers = [String]()
+        correctAnswer = -1
+        
     }
 
 }
