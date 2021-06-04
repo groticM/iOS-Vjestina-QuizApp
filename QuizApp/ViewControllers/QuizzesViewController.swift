@@ -23,12 +23,12 @@ class QuizzesViewController: UIViewController {
     private var funFactView: UIView!
     private var imageBulbView: UIImageView!
     
-    private var quizzes: [Quiz]!
+    private var quizzes: [Quiz]?
     private var nba: Int?
     private var category: [QuizCategory]?
     private var categoryNum: Int?
     
-    private let dataService =  DataService()
+    private let networkService = NetworkService()
     private let cellIdentifier = "cellId"
     private let headerIdentifier = "headerId"
     private let controllers: [UIViewController] = [
@@ -190,9 +190,18 @@ class QuizzesViewController: UIViewController {
     
     @objc
     private func getQuizes(){
-        quizzes = dataService.fetchQuizes().sorted{ $0.category.rawValue < $1.category.rawValue }.sorted{ $0.title < $1.title }
+        let backgroundQueue = DispatchQueue(label: "load-quizzes", qos: .userInitiated, attributes: .concurrent)
+        backgroundQueue.sync {
+            quizzes = networkService.fetchQuizes()
+        }
         
-        if quizzes != nil {
+        guard let quizzes = quizzes else { return }
+        
+        if quizzes.isEmpty {
+            let popUpWindow = PopUpWindowController()
+            self.navigationController?.present(popUpWindow, animated: true, completion: nil)
+            
+        } else {
             imageErrorView.isHidden = true
             errorTitle.isHidden = true
             errorText.isHidden = true
@@ -206,16 +215,19 @@ class QuizzesViewController: UIViewController {
             let questions = quizzes.flatMap{ $0.questions }
             let q = questions.filter{ $0.question.contains("NBA") }
             nba = q.count
-            
+                
+            // Sections
+            category = Array(Set(quizzes.compactMap{ $0.category })).sorted{ $0.rawValue < $1.rawValue }
+
             if nba != nil {
                 infLabel.text = "There are \(nba!) questions that contain the word \"NBA\"."
             }
-            
-            // Sections
-            category = Array(Set(quizzes.compactMap{ $0.category })).sorted{ $0.rawValue < $1.rawValue }
-            categoryNum = category!.count
+                
+            guard let category = category else { return }
+            categoryNum = category.count
+
             tableView.reloadData()
-            
+                
         }
     }
 }
@@ -233,6 +245,7 @@ extension QuizzesViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         var count: Int!
+        guard let quizzes = quizzes else { return 0 }
         let quizCategory = quizzes.compactMap{ $0.category }
         
         count = quizCategory.filter{ $0.rawValue == category![section].rawValue}.count
@@ -241,7 +254,6 @@ extension QuizzesViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as! QuizViewCell
         cell.backgroundColor = UIColor(red: 0.5804, green: 0.7725, blue: 0.9882, alpha: 1.0)
         cell.layer.cornerRadius = 20
@@ -319,7 +331,9 @@ extension QuizzesViewController: UITableViewDelegate {
         sectionTitle.textColor = .white
         sectionTitle.font = UIFont(name: "HelveticaNeue-Bold", size: 25)
         
-        sectionTitle.text = category![section].rawValue
+        if category != nil {
+            sectionTitle.text = category![section].rawValue
+        }
 
         headerView.addSubview(sectionTitle)
 
@@ -328,9 +342,6 @@ extension QuizzesViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        /*let quizViewController = QuizViewController(quiz: quizzes![indexPath.section + indexPath.row], number: 0, correctNum: 0)
-        self.navigationController?.pushViewController(quizViewController, animated: true)*/
-        
         let pageViewController = PageViewController(quiz: quizzes![indexPath.section + indexPath.row])
         self.navigationController?.pushViewController(pageViewController, animated: true)
 

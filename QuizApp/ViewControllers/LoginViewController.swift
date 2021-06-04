@@ -26,7 +26,7 @@ class LoginViewController: UIViewController {
     private let defaultButtonAlpha: CGFloat = 0.5
     private let radius: CGFloat = 25
     
-    private let data: DataService = DataService()
+    private let networkService = NetworkService()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -172,8 +172,8 @@ class LoginViewController: UIViewController {
         NSLayoutConstraint.activate([
             hiddenErrorLabel.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             hiddenErrorLabel.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 10),
-            hiddenErrorLabel.leadingAnchor.constraint(equalTo: passwordView.leadingAnchor, constant: 50),
-            hiddenErrorLabel.trailingAnchor.constraint(equalTo: passwordView.trailingAnchor, constant: -50),
+            hiddenErrorLabel.leadingAnchor.constraint(equalTo: passwordView.leadingAnchor, constant: 20),
+            hiddenErrorLabel.trailingAnchor.constraint(equalTo: passwordView.trailingAnchor, constant: -20),
             hiddenErrorLabel.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: -250),
         ])
         
@@ -257,33 +257,38 @@ class LoginViewController: UIViewController {
         
         let email = emailField.text
         let password = passwordField.text
+        guard let username = email, let password = password else { return }
         
-        let loginStatus = data.login(email: email!, password: password!)
-        //let loginStatus = LoginStatus.success
+        var success: LoginStatus?
+        let backgroundQueue = DispatchQueue(label: "login", qos: .userInitiated, attributes: .concurrent)
+        backgroundQueue.sync {
+            success = networkService.login(username: username, password: password)
+        }
         
-        switch loginStatus {
-            case LoginStatus.success:
-                print("E-mail: ", email!)
-                print("Password: ", password!)
-                
-                let quizzesViewController = QuizzesViewController()
-                quizzesViewController.tabBarItem = UITabBarItem(title: "Quiz", image:  UIImage(systemName: "stopwatch"), selectedImage: UIImage(systemName: "stopwatch.fill"))
-                let settingsViewController = SettingsViewController()
-                settingsViewController.tabBarItem = UITabBarItem(title: "Settings", image:  UIImage(systemName: "gearshape"), selectedImage: UIImage(systemName: "gearshape.fill"))
-                
-                let tabBarController = UITabBarController()
-                tabBarController.viewControllers = [quizzesViewController, settingsViewController]
-                
-                let newNavigationController = UINavigationController(rootViewController: tabBarController)
-                newNavigationController.modalPresentationStyle = .overFullScreen
-                newNavigationController.navigationBar.barTintColor = Color().colorBackground
-                self.navigationController?.present(newNavigationController, animated: true, completion: nil)
-                
-            case LoginStatus.error(let code, let text):
-                print("Error: \(text) (\(code))")
-                hiddenErrorLabel.isHidden = false
-                hiddenErrorLabel.text = "Error: \(text) (\(code))"
-                
+        guard let success = success else {  return }
+        switch success {
+        case LoginStatus.success:
+            print("E-mail:  \(username)")
+            print("Password: \(password)")
+            
+            let quizzesViewController = QuizzesViewController()
+            quizzesViewController.tabBarItem = UITabBarItem(title: "Quiz", image:  UIImage(systemName: "stopwatch"), selectedImage: UIImage(systemName: "stopwatch.fill"))
+            let settingsViewController = SettingsViewController()
+            settingsViewController.tabBarItem = UITabBarItem(title: "Settings", image:  UIImage(systemName: "gearshape"), selectedImage: UIImage(systemName: "gearshape.fill"))
+            
+            let tabBarController = UITabBarController()
+            tabBarController.viewControllers = [quizzesViewController, settingsViewController]
+            self.navigationController?.setViewControllers([tabBarController], animated: true)
+            
+        case LoginStatus.error(_,_):
+            print("Error: Wrong password or username")
+            hiddenErrorLabel.isHidden = false
+            hiddenErrorLabel.text = "Error: Wrong password or username"
+        
+        case LoginStatus.noInternetConnection:
+            let popUpWindow = PopUpWindowController()
+            self.navigationController?.present(popUpWindow, animated: true, completion: nil)
+            
         }
     }
 }
