@@ -137,7 +137,7 @@ class QuizNetworkDataSource: NetworkServiceProtocol {
         
             self.executeUrlRequestPostResult(request) { (result: Result<Int, RequestError>) in
                 switch result {
-                case .failure(let error):
+                case .failure(_):
                     pageViewController.apiResult(result: false)
                 case .success(let value):
                     print(value)
