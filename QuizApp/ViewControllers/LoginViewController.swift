@@ -26,11 +26,6 @@ class LoginViewController: UIViewController {
     private var tralingConstraintPassword: NSLayoutConstraint!
     private var leadingConstraintButton: NSLayoutConstraint!
     private var tralingConstraintButton: NSLayoutConstraint!
-    private var topConstraintTitleLabel: NSLayoutConstraint!
-    private var topConstraintEmail: NSLayoutConstraint!
-    private var topConstraintPassword: NSLayoutConstraint!
-    private var topConstraintButton: NSLayoutConstraint!
-    
     
     private var iconClick: Bool = true
 
@@ -137,12 +132,12 @@ class LoginViewController: UIViewController {
         scrollView.autoPinEdge(.leading, to: .leading, of: view)
         scrollView.autoPinEdge(.trailing, to: .trailing, of: view)
         
-        topConstraintTitleLabel = titleLabel.autoPinEdge(.top, to: .top, of: scrollView, withOffset: 65)
+        titleLabel.autoPinEdge(.top, to: .top, of: scrollView, withOffset: 65)
         titleLabel.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 35)
         titleLabel.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 35)
         titleLabel.autoSetDimension(.height, toSize: 50)
 
-        topConstraintEmail = emailView.autoPinEdge(.top, to: .bottom, of: titleLabel, withOffset: 120)
+        emailView.autoPinEdge(.top, to: .bottom, of: titleLabel, withOffset: 120)
         leadingConstraintEmail = emailView.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 35)
         tralingConstraintEmail = emailView.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 35)
         emailView.autoSetDimension(.height, toSize: 50)
@@ -152,7 +147,7 @@ class LoginViewController: UIViewController {
         emailField.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 10)
         emailField.autoSetDimension(.height, toSize: 50)
         
-        topConstraintPassword = passwordView.autoPinEdge(.top, to: .bottom, of: emailView, withOffset: 10)
+        passwordView.autoPinEdge(.top, to: .bottom, of: emailView, withOffset: 10)
         leadingConstraintPassword = passwordView.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 35)
         tralingConstraintPassword = passwordView.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 35)
         passwordView.autoSetDimension(.height, toSize: 50)
@@ -162,14 +157,16 @@ class LoginViewController: UIViewController {
         passwordField.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 10)
         passwordField.autoSetDimension(.height, toSize: 50)
         
-        topConstraintButton = loginButton.autoPinEdge(.top, to: .bottom, of: passwordView, withOffset: 10)
+        loginButton.autoPinEdge(.top, to: .bottom, of: passwordView, withOffset: 10)
         leadingConstraintButton = loginButton.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 35)
         tralingConstraintButton = loginButton.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 35)
         loginButton.autoSetDimension(.height, toSize: 50)
         
+        
         hiddenErrorLabel.autoPinEdge(.top, to: .bottom, of: loginButton, withOffset: 10)
         hiddenErrorLabel.autoPinEdge(toSuperviewSafeArea: .leading, withInset: 20)
         hiddenErrorLabel.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 20)
+        hiddenErrorLabel.autoPinEdge(.bottom, to: .bottom, of: scrollView, withOffset: -20)
         hiddenErrorLabel.autoSetDimension(.height, toSize: 30)
         
     }
@@ -186,7 +183,7 @@ class LoginViewController: UIViewController {
         leadingConstraintButton.constant = -view.frame.width
         tralingConstraintButton.constant = -view.frame.width
         
-        titleLabel.transform = CGAffineTransform(scaleX: 0.001, y: 0.001)
+        titleLabel.transform = CGAffineTransform(scaleX: 0.0001, y: 0.0001)
 
     }
     
@@ -200,7 +197,7 @@ class LoginViewController: UIViewController {
         
         // Animate Title Label
         UIView.animate(withDuration: duration, animations: {
-         self.titleLabel.transform = CGAffineTransform(scaleX: 1, y: 1)
+            self.titleLabel.transform = CGAffineTransform(scaleX: 1, y: 1)
             self.titleLabel.alpha = 1
         })
         
@@ -228,21 +225,6 @@ class LoginViewController: UIViewController {
             self.loginButton.alpha = self.defaultButtonAlpha
         })
         
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        topConstraintTitleLabel.constant = -view.frame.height
-        UIView.animate(withDuration: duration, delay: 0, options: .curveEaseOut, animations: {
-            self.view.layoutIfNeeded()
-        })
-        
-        
-        //titleLabel.isHidden = true
-        //emailView.isHidden = true
-        //passwordView.isHidden = true
-        //loginButton.isHidden = true
     }
     
     private func designTextField(viewField: UIView, textField: UITextField, text: String, radius: CGFloat){
@@ -346,7 +328,34 @@ class LoginViewController: UIViewController {
             guard let username = email, let password = password else { return }
             print("E-mail:  \(username)")
             print("Password: \(password)")
-
+            
+            makeAnimation()
+            
+        } else {
+            loginButton.isEnabled = true
+            print("Error: Wrong password or username")
+            hiddenErrorLabel.isHidden = false
+            hiddenErrorLabel.text = "Error: Wrong password or username"
+        
+        }
+    }
+    
+    private func makeAnimation() {
+        UIView.animate(withDuration: duration, delay: 0, animations: {
+            self.titleLabel.transform = self.titleLabel.transform.translatedBy(x: 0, y: -self.view.frame.height)
+        })
+        
+        UIView.animate(withDuration: duration, delay: 0.25, animations: {
+            self.emailView.transform = self.emailView.transform.translatedBy(x: 0, y: -self.view.frame.height)
+        })
+        
+        UIView.animate(withDuration: duration, delay: 0.5, animations: {
+            self.passwordView.transform = self.passwordView.transform.translatedBy(x: 0, y: -self.view.frame.height)
+        })
+        
+        UIView.animateKeyframes(withDuration: duration, delay: 0.75, animations:  {
+            self.loginButton.transform = self.loginButton.transform.translatedBy(x: 0, y: -self.view.frame.height)
+        }, completion: {_ in
             let quizzesViewController = QuizzesViewController()
             quizzesViewController.tabBarItem = UITabBarItem(title: "Quiz", image:  UIImage(systemName: "stopwatch"), selectedImage: UIImage(systemName:"stopwatch.fill"))
             
@@ -360,13 +369,8 @@ class LoginViewController: UIViewController {
             tabBarController.viewControllers = [quizzesViewController, searchQuizViewController, settingsViewController]
             self.navigationController?.setViewControllers([tabBarController], animated: true)
             
-        } else {
-            loginButton.isEnabled = true
-            print("Error: Wrong password or username")
-            hiddenErrorLabel.isHidden = false
-            hiddenErrorLabel.text = "Error: Wrong password or username"
+        })
         
-        }
     }
     
     public func loginAPIResult(result: Bool) {
