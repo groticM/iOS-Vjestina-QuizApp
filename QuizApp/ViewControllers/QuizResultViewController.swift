@@ -75,13 +75,17 @@ class QuizResultViewController: UIViewController{
     @objc
     private func finish(){
         let quizzesViewController = QuizzesViewController()
-        quizzesViewController.tabBarItem = UITabBarItem(title: "Quiz", image:  UIImage(systemName: "stopwatch"), selectedImage: UIImage(systemName: "stopwatch.fill"))
+        quizzesViewController.tabBarItem = UITabBarItem(title: "Quiz", image:  UIImage(systemName: "stopwatch"), selectedImage: UIImage(systemName:"stopwatch.fill"))
+        
+        let searchQuizViewController = SearchQuizViewController()
+        searchQuizViewController.tabBarItem = UITabBarItem(title: "Search", image:  UIImage(systemName: "magnifyingglass"), selectedImage: UIImage(systemName:"magnifyingglass.circle.fill"))
+        
         let settingsViewController = SettingsViewController()
-        settingsViewController.tabBarItem = UITabBarItem(title: "Settings", image:  UIImage(systemName: "gearshape"), selectedImage: UIImage(systemName: "gearshape.fill"))
+        settingsViewController.tabBarItem = UITabBarItem(title: "Settings", image:  UIImage(systemName: "gearshape"), selectedImage: UIImage(systemName:"gearshape.fill"))
         
         let tabBarController = UITabBarController()
-        tabBarController.viewControllers = [quizzesViewController, settingsViewController]
-        navigationController?.setViewControllers([tabBarController], animated: true)
+        tabBarController.viewControllers = [quizzesViewController, searchQuizViewController, settingsViewController]
+        self.navigationController?.setViewControllers([tabBarController], animated: true)
         
     }
 }
