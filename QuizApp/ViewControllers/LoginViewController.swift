@@ -311,7 +311,6 @@ class LoginViewController: UIViewController {
             loginButton.isEnabled = true
             let popUpWindow = PopUpWindowController()
             self.navigationController?.present(popUpWindow, animated: true, completion: nil)
-            
         }
 
     }
@@ -336,8 +335,8 @@ class LoginViewController: UIViewController {
             print("Error: Wrong password or username")
             hiddenErrorLabel.isHidden = false
             hiddenErrorLabel.text = "Error: Wrong password or username"
-        
         }
+        
     }
     
     private func makeAnimation() {
@@ -368,7 +367,6 @@ class LoginViewController: UIViewController {
             let tabBarController = UITabBarController()
             tabBarController.viewControllers = [quizzesViewController, searchQuizViewController, settingsViewController]
             self.navigationController?.setViewControllers([tabBarController], animated: true)
-            
         })
         
     }
